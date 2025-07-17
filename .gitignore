@@ -1,0 +1,8 @@
+__pycache__
+#.gitignore
+.env
+.venv
+.vscode
+.draft*
+.playground*
+*.egg-info
