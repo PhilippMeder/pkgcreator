@@ -54,6 +54,7 @@ class FileContent(dict):
 
     @staticmethod
     def get_pyproject_toml():
+        github_repo = "https://github.com/USERNAME/PACKAGENAME"
         return (
             """[project]\nname = "PACKAGENAME"\nversion = "0.1"\n"""
             """authors = [{ name="AUTHORNAME", email="AUTHORMAIL@SOMETHING.com" },]\n"""
@@ -62,6 +63,12 @@ class FileContent(dict):
             """dependencies = []\n"""
             """classifiers=[\n    "Programming Language :: Python :: 3",\n    """
             """"Operating System :: OS Independent",\n]"""
+            """\n\n[project.urls]\n"""
+            f"""Homepage = "{github_repo}"\n"""
+            f"""Documentation = "{github_repo}"\n"""
+            f"""Repository = "{github_repo}.git"\n"""
+            f"""Issues = "{github_repo}/issues"\n"""
+            f"""Changelog = "{github_repo}/commits"\n"""
         )
 
     @staticmethod
