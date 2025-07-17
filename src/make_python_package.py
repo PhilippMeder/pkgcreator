@@ -26,6 +26,7 @@ class FileContent(dict):
     def __init__(self, license: str = None, **kwargs):
         kwargs.setdefault(".gitignore", self.get_gitignore())
         kwargs.setdefault("LICENSE", self.get_license(license))
+        kwargs.setdefault("pyproject.toml", self.get_pyproject_toml())
         kwargs.setdefault("README.md", self.get_readme())
         super().__init__(**kwargs)
 
@@ -50,6 +51,18 @@ class FileContent(dict):
             return get_license(license)
         except Exception as err:
             return ""
+
+    @staticmethod
+    def get_pyproject_toml():
+        return (
+            """[project]\nname = "PACKAGENAME"\nversion = "0.1"\n"""
+            """authors = [{ name="AUTHORNAME", email="AUTHORMAIL@SOMETHING.com" },]\n"""
+            """description = "PACKAGEDESCRIPTION"\nreadme = "README.md"\n"""
+            """license = { file = "LICENSE" }\nrequires-python = ">=3.XX"\n"""
+            """dependencies = []\n"""
+            """classifiers=[\n    "Programming Language :: Python :: 3",\n    """
+            """"Operating System :: OS Independent",\n]"""
+        )
 
     @staticmethod
     def get_readme():
