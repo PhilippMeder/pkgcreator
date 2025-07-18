@@ -1,4 +1,5 @@
 import argparse
+import subprocess
 import warnings
 from dataclasses import dataclass, fields
 from pathlib import Path
@@ -238,7 +239,7 @@ def create_package_structure(
     name: str,
     ask: bool = True,
     project_settings: ProjectSettings = None,
-):
+) -> Path:
     """Get the wanted package structure and create it."""
     if project_settings is None:
         project_settings = ProjectSettings()
@@ -253,6 +254,11 @@ def create_package_structure(
             print(f"Creation aborted by user input '{_input}'...")
     else:
         create_components(parent_dir, structure, file_content=file_content)
+
+    if len(keys := list(structure.keys())) == 1:
+        return parent_dir.joinpath(keys[0])
+    else:
+        return parent_dir
 
 
 def check_requests(text: str):
@@ -306,6 +312,45 @@ def get_license(name: str, licenses: dict = None):
         return text
 
 
+def get_git_config_value(key: str) -> str | None:
+    """Return the value for 'key' from the git config."""
+    try:
+        result = subprocess.run(
+            ["git", "config", "--get", key],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        return result.stdout.strip() or None
+    except subprocess.CalledProcessError:
+        return None
+
+
+def run_git_command(*args, cwd=None):
+    """Run a git command."""
+    subprocess.run(["git", *args], check=True, cwd=cwd)
+
+
+def create_git_repository(path: Path):
+    """Create git repository and stage and commit all files."""
+    try:
+        # Return if repository already exists
+        run_git_command("status", cwd=path)
+        warnings.warn(
+            f"It seems like there already is a repository in {path}!",
+            UserWarning,
+            stacklevel=2,
+        )
+        return
+    except subprocess.CalledProcessError:
+        pass
+
+    run_git_command("init", "-b", "main", cwd=path)
+    run_git_command("add", "-A", cwd=path)
+    run_git_command("commit", "-m Created repository", cwd=path)
+
+
 def get_sys_args():
     parser = argparse.ArgumentParser(
         description="Create a new Python package structure with optional license."
@@ -323,6 +368,12 @@ def get_sys_args():
         "--autoname-repository",
         action="store_true",
         help="ignore the value of 'github_repositoryname' and set it to 'name'",
+    )
+    parser.add_argument(
+        "-i",
+        "--init-git",
+        action="store_true",
+        help="initialise Git repository and commit created files (requires 'Git')",
     )
     parser.add_argument(
         "-l",
@@ -351,6 +402,10 @@ if __name__ == "__main__":
         project_settings.license_id = args.license
         if args.autoname_repository:
             project_settings.github_repositoryname = args.name
-        create_package_structure(
+        project_path = create_package_structure(
             args.destination, args.name, ask=True, project_settings=project_settings
         )
+        if args.init_git:
+            create_git_repository(project_path)
+        elif input("Initalise Git repository (requires 'Git')? (Y/n): ") == "Y":
+            create_git_repository(project_path)
