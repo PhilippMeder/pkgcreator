@@ -3,6 +3,7 @@ import subprocess
 import warnings
 from dataclasses import dataclass, fields
 from pathlib import Path
+from sys import version_info
 
 # Try to import requests. It is okay if this fails since most parts will work anyway.
 try:
@@ -210,11 +211,16 @@ class FileContent(dict):
                 for name, _url in project.urls.items()
             ]
         )
+        try:
+            min_python = f"{version_info.major}.{version_info.minor:02}"
+        except Exception as err:
+            min_python = "3.00"
         return (
             f"""[project]\nname = "{project.name}"\nversion = "0.1"\n"""
             f"""authors = [{{ {author_str} }},]\n"""
             f"""description = "{project.description}"\nreadme = "README.md"\n"""
-            """license = { file = "LICENSE" }\nrequires-python = ">=3.XX"\n"""
+            """license = { file = "LICENSE" }\n"""
+            f"""requires-python = ">={min_python}"\n"""
             """dependencies = []\n"""
             """classifiers=[\n    "Programming Language :: Python :: 3",\n    """
             """"Operating System :: OS Independent",\n]"""
