@@ -22,12 +22,13 @@ Distributed under the [BSD 3-Clause License](./LICENSE).
 A simple command-line tool to create a clean folder structure for a new Python package. Optionally includes a license file.
 
 **Features:**
+
 - Creates
-    -`src\package-name` (structure recommended for Python packages)
-    -`pyproject.toml.py`
-    -`README.md` (with an example structure)
-    -`.gitignore` (with my current preferences)
-    -`LICENSE` (see below)
+  - `src\package-name` (structure recommended for Python packages)
+  - `pyproject.toml` (with most common settings)
+  - `README.md` (with an example structure)
+  - `.gitignore` (with my current preferences)
+  - `LICENSE` (with license text, see below)
 - Adds a license file from a predefined list (e.g. MIT, Apache-2.0) if wanted
 - Initalises a Git repository if wanted (requires `Git`)
 
@@ -131,7 +132,7 @@ If no folder is specified, the full repository is checked out.
 
 * Python 3.13+ (may work with lower versions, but not tested)
 * `requests` library (for Python GitHub downloader and license selection)
-* `git` (for sparse-checkout Bash script)
+* `Git` (for sparse-checkout Bash script or if you want to initalise a Git repository when creating a Python package)
 
 To install Python dependencies (if needed):
 
