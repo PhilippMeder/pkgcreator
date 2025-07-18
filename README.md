@@ -29,6 +29,7 @@ A simple command-line tool to create a clean folder structure for a new Python p
     -`.gitignore` (with my current preferences)
     -`LICENSE` (see below)
 - Adds a license file from a predefined list (e.g. MIT, Apache-2.0) if wanted
+- Initalises a Git repository if wanted (requires `Git`)
 
 **Usage:**
 
@@ -41,6 +42,36 @@ To list available licenses:
 ```bash
 python make_python_package.py my_package --list-licenses
 ```
+
+To list available options with explanations:
+
+```bash
+python make_python_package.py --help
+```
+
+**About the `-m, --prompt-mode` Option**
+
+If not explicitly set, some arguments will suggest values based on context:
+
+- `--github-repositoryname` may suggest using the package name
+- `--author-name` may suggest using `user.name` from `git config`, if available
+- `--author-mail` may suggest using `user.email` from `git config`, if available
+- `--init-git` may ask whether to initialise a Git repository
+
+Use the `-m, --prompt-mode` option to control whether these suggestions are shown or automatically handled:
+
+| Option                   | `yes` | `auto` | `no`  |
+|--------------------------|:-----:|:------:|:-----:|
+| `--github-repositoryname`|  ✅   |   ✅    |  ❌   |
+| `--author-name`          |  ✅   |   ✅    |  ❌   |
+| `--author-mail`          |  ✅   |   ✅    |  ❌   |
+| `--init-git`             |  ✅   |   ❌    |  ❌   |
+
+- `yes`: Automatically accept all suggestions
+- `no`: Skip all prompts and use defaults or leave unset
+- `auto`: Accept safe suggestions only (e.g., use Git info, but skip Git initialisation)
+- `ask` *(default)*: Prompt interactively for each case, and ask again before creating the project structure
+
 
 
 ### GitHub Downloader

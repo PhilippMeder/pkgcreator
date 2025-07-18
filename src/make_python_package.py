@@ -72,6 +72,15 @@ class ProjectSettings:
         else:
             return value
 
+    def is_default(self, name: str) -> bool:
+        """Check if the value of field 'name' equals to the default value."""
+        for field in fields(self):
+            if field.name != name:
+                continue
+            return getattr(self, name) == field.default
+        else:
+            raise AttributeError(f"Field '{name}' unkown!")
+
     @property
     def github(self) -> str:
         """Return the link to the github repository."""
@@ -103,6 +112,18 @@ class ProjectSettings:
         return {
             name: _url for name in names if (_url := getattr(self, name)) is not None
         }
+
+    @property
+    def nice_str(self) -> str:
+        """Return a table-like string representation of the fields."""
+        values = {
+            field.name: value
+            for field in fields(self)
+            if (value := getattr(self, field.name))
+        }
+        n_max = max(map(len, values.keys()))
+
+        return "\n".join([f"{name:<{n_max}} {value}" for name, value in values.items()])
 
     @classmethod
     def add_to_argparser(
@@ -237,7 +258,6 @@ def create_components(path: Path, structure: dict, file_content: dict = None):
 def create_package_structure(
     destination_path: str | Path,
     name: str,
-    ask: bool = True,
     project_settings: ProjectSettings = None,
 ) -> Path:
     """Get the wanted package structure and create it."""
@@ -246,14 +266,7 @@ def create_package_structure(
     parent_dir = Path(destination_path)
     structure = Structure.package(name)
     file_content = FileContent(project_settings)
-    if ask:
-        _input = input(f"Create package '{name}' at '{parent_dir.absolute()}'? (Y/n): ")
-        if _input == "Y":
-            create_components(parent_dir, structure, file_content=file_content)
-        else:
-            print(f"Creation aborted by user input '{_input}'...")
-    else:
-        create_components(parent_dir, structure, file_content=file_content)
+    create_components(parent_dir, structure, file_content=file_content)
 
     if len(keys := list(structure.keys())) == 1:
         return parent_dir.joinpath(keys[0])
@@ -351,7 +364,85 @@ def create_git_repository(path: Path):
     run_git_command("commit", "-m Created repository", cwd=path)
 
 
+def get_prompt_bool(message: str, mode: str, auto_decision: bool = False) -> bool:
+    """Return True/False for a prompt according to mode or user input."""
+    match mode:
+        case "yes":
+            return True
+        case "no":
+            return False
+        case "auto":
+            return auto_decision
+        case "ask" | _:
+            user_input = input(f"{message} (Y/n): ")
+            return user_input == "Y"
+
+
+def patch_default_settings(project_settings: ProjectSettings, args: argparse.Namespace):
+    """Ask or decide how a few settings should behave when not set explicitly."""
+    if project_settings.is_default("github_repositoryname"):
+        if get_prompt_bool(
+            f"'--github-repositoryname' was not set. Set to {args.name}?",
+            args.prompt_mode,
+            auto_decision=True,
+        ):
+            project_settings.github_repositoryname = args.name
+            print(f"Set '--github-repositoryname' to {args.name}...")
+    if project_settings.is_default("author_name"):
+        if git_user := get_git_config_value("user.name"):
+            if get_prompt_bool(
+                f"'--author-name' was not set. Set to {git_user} (from 'git config')?",
+                args.prompt_mode,
+                auto_decision=True,
+            ):
+                project_settings.author_name = git_user
+                print(f"Set '--author-name' to {git_user}...")
+    if project_settings.is_default("author_mail"):
+        if git_mail := get_git_config_value("user.email"):
+            if get_prompt_bool(
+                f"'--author-mail' was not set. Set to {git_mail} (from 'git config')?",
+                args.prompt_mode,
+                auto_decision=True,
+            ):
+                project_settings.author_mail = git_mail
+                print(f"Set '--author-mail' to {git_mail}...")
+
+
+def creation_mode(args: argparse.Namespace):
+    """Run the creation process."""
+    # Setup the project settings
+    project_settings = ProjectSettings.from_argparser(args)
+    project_settings.license_id = args.license
+    destination_path = Path(args.destination)
+
+    # Ask for some settings if not specified
+    patch_default_settings(project_settings, args)
+
+    # Check and return if creation is aborted, but ignore the "no" mode this time!
+    msg = (
+        f"Settings:\n{project_settings.nice_str}\n"
+        f"Create package '{args.name}' at '{destination_path.absolute()}'?"
+    )
+    if (
+        not get_prompt_bool(msg, args.prompt_mode, auto_decision=True)
+        and args.prompt_mode != "no"
+    ):
+        print(f"Creation aborted...")
+        return
+
+    # Create the package structure
+    project_path = create_package_structure(
+        destination_path, args.name, project_settings=project_settings
+    )
+
+    # Create git repository if wanted
+    git_msg = "Initalise Git repository (requires 'Git')?"
+    if args.init_git or get_prompt_bool(git_msg, args.prompt_mode, auto_decision=False):
+        create_git_repository(project_path)
+
+
 def get_sys_args():
+    """Get the settings."""
     parser = argparse.ArgumentParser(
         description="Create a new Python package structure with optional license."
     )
@@ -364,10 +455,14 @@ def get_sys_args():
         help="destination directory for the package structure",
     )
     parser.add_argument(
-        "-r",
-        "--autoname-repository",
-        action="store_true",
-        help="ignore the value of 'github_repositoryname' and set it to 'name'",
+        "-m",
+        "--prompt-mode",
+        choices=["ask", "yes", "no", "auto"],
+        default="ask",
+        help=(
+            "control prompts for user interaction: ask (default), yes (always accept), "
+            "no (always decline), auto (decide automatically)"
+        ),
     )
     parser.add_argument(
         "-i",
@@ -398,14 +493,4 @@ if __name__ == "__main__":
         licenses_str = ", ".join(available_licenses.keys())
         print(f"Available licenses are:\n{licenses_str}")
     else:
-        project_settings = ProjectSettings.from_argparser(args)
-        project_settings.license_id = args.license
-        if args.autoname_repository:
-            project_settings.github_repositoryname = args.name
-        project_path = create_package_structure(
-            args.destination, args.name, ask=True, project_settings=project_settings
-        )
-        if args.init_git:
-            create_git_repository(project_path)
-        elif input("Initalise Git repository (requires 'Git')? (Y/n): ") == "Y":
-            create_git_repository(project_path)
+        creation_mode(args)
