@@ -1,7 +1,17 @@
 import argparse
-import requests
+import warnings
 from dataclasses import dataclass, fields
 from pathlib import Path
+
+# Try to import requests. It is okay if this fails since most parts will work anyway.
+try:
+    import requests
+
+    REQUESTS_IMPORT_ERROR = False
+except Exception as err:
+    # print(dir(err))
+    requests = None
+    REQUESTS_IMPORT_ERROR = err
 
 
 class Structure:
@@ -240,12 +250,25 @@ def create_package_structure(
         create_components(parent_dir, structure, file_content=file_content)
 
 
+def check_requests(text: str):
+    """Raise warning and REQUESTS_IMPORT_ERROR if 'requests' is not available."""
+    if REQUESTS_IMPORT_ERROR:
+        warning_text = (
+            f"{text} requires unavailable module 'requests'! "
+            f"({type(REQUESTS_IMPORT_ERROR).__qualname__}: {REQUESTS_IMPORT_ERROR})"
+        )
+        warnings.warn(warning_text, UserWarning, stacklevel=3)
+        REQUESTS_IMPORT_ERROR.add_note(warning_text)
+        raise REQUESTS_IMPORT_ERROR
+
+
 def get_available_licenses(api_url: str = None):
     """
     Get available license form the 'choosealicense.com' repository.
 
     You may specify a different GitHub repository by changing the 'api_url'.
     """
+    check_requests("Showing available licenses")
     if api_url is None:
         api_url = (
             "https://api.github.com/repos/github/choosealicense.com/contents/_licenses"
@@ -264,6 +287,7 @@ def get_available_licenses(api_url: str = None):
 
 def get_license(name: str, licenses: dict = None):
     """Download the chosen licenses."""
+    check_requests("Downloading a license")
     if licenses is None:
         licenses = get_available_licenses()
     download_url = licenses[name]
@@ -314,7 +338,8 @@ def get_sys_args():
 if __name__ == "__main__":
     args = get_sys_args()
     if args.list_licenses:
-        licenses_str = ", ".join(get_available_licenses().keys())
+        available_licenses = get_available_licenses()
+        licenses_str = ", ".join(available_licenses.keys())
         print(f"Available licenses are:\n{licenses_str}")
     else:
         project_settings = ProjectSettings.from_argparser(args)
