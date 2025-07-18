@@ -31,6 +31,7 @@ A simple command-line tool to create a clean folder structure for a new Python p
   - `LICENSE` (with license text, see below)
 - Adds a license file from a predefined list (e.g. MIT, Apache-2.0) if wanted
 - Initalises a Git repository if wanted (requires `Git`)
+- Initalises a virtual environment (`venv`) and install package in editable mode if wanted
 
 **Usage:**
 
@@ -58,6 +59,7 @@ If not explicitly set, some arguments will suggest values based on context:
 - `--author-name` may suggest using `user.name` from `git config`, if available
 - `--author-mail` may suggest using `user.email` from `git config`, if available
 - `--init-git` may ask whether to initialise a Git repository
+- `--init-venv` may ask whether to initialise a virtual environment and install the package in editable mode
 
 Use the `-m, --prompt-mode` option to control whether these suggestions are shown or automatically handled:
 
@@ -67,6 +69,7 @@ Use the `-m, --prompt-mode` option to control whether these suggestions are show
 | `--author-name`          |  ✅   |   ✅    |  ❌   |
 | `--author-mail`          |  ✅   |   ✅    |  ❌   |
 | `--init-git`             |  ✅   |   ❌    |  ❌   |
+| `--init-venv`            |  ✅   |   ❌    |  ❌   |
 
 - `yes`: Automatically accept all suggestions
 - `no`: Skip all prompts and use defaults or leave unset

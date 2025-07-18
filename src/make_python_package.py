@@ -1,5 +1,6 @@
 import argparse
 import subprocess
+import venv
 import warnings
 from dataclasses import dataclass, fields
 from pathlib import Path
@@ -14,6 +15,154 @@ except Exception as err:
     # print(dir(err))
     requests = None
     REQUESTS_IMPORT_ERROR = err
+
+
+class ConcreteEnvBuilder(venv.EnvBuilder):
+    """
+    Custom EnvBuilder that enforces pip and calls a post-creation callback.
+
+    Parameters
+    ----------
+    creation_callback : callable, optional
+        A function that is called with the context after venv creation.
+    """
+
+    def __init__(self, *args, creation_callback: callable = None, **kwargs) -> None:
+        kwargs["with_pip"] = True
+        self.creation_callback = creation_callback
+        super().__init__(*args, **kwargs)
+
+    def post_setup(self, context) -> None:
+        """
+        Add `.gitignore` and call creation callback after venv was created..
+        """
+        self.create_git_ignore_file(context)
+        if self.creation_callback is not None:
+            self.creation_callback(context)
+
+
+class VirtualEnvironment:
+    """
+    Class to manage the creation and usage of a Python virtual environment.
+
+    Parameters
+    ----------
+    parent_dir : str or Path
+        The directory where the `.venv` folder should be created.
+    """
+
+    def __init__(
+        self,
+        parent_dir: str | Path,
+    ):
+        self._parent_dir = Path(parent_dir)
+        self._venv_dir = self._parent_dir / ".venv"
+        self._created_venv_exe = None
+        self._venv_exe = None
+
+    @property
+    def venv_dir(self) -> Path:
+        """
+        Returns
+        -------
+        Path
+            The path to the virtual environment directory.
+        """
+        return self._venv_dir
+
+    @property
+    def python(self) -> Path:
+        """
+        Returns
+        -------
+        Path
+            Path to the Python executable inside the virtual environment.
+
+        Raises
+        ------
+        FileNotFoundError
+            If no Python executable was found in the venv directory.
+        """
+        if self._created_venv_exe is not None:
+            return self._created_venv_exe
+        elif self._venv_exe is not None:
+            return self._venv_exe
+
+        possible_paths = (
+            self.venv_dir / "bin" / "python.exe",
+            self.venv_dir / "Scripts" / "python.exe",
+            self.venv_dir / "bin" / "python",
+        )
+
+        for path in possible_paths:
+            if path.exists():
+                self._venv_exe = path
+                return path
+        else:
+            msg = f"No python executable found in {self.venv_dir}!"
+            raise FileNotFoundError(msg)
+
+    def create(self) -> None:
+        """
+        Create the virtual environment.
+
+        Raises
+        ------
+        FileExistsError
+            If the venv directory already exists.
+        """
+        if self.venv_dir.exists():
+            msg = f"{self.venv_dir} already exists!"
+            raise FileExistsError(msg)
+
+        print(f"Creating venv in {self.venv_dir} (this may take some time)...")
+        builder = ConcreteEnvBuilder(creation_callback=self._process_creation_context)
+        builder.create(self.venv_dir)
+        print(f"Finished creating venv in {self.venv_dir}.")
+
+    def install_packages(
+        self, packages: list[str] = None, editable_packages: list[str] = None
+    ) -> None:
+        """
+        Install normal and editable packages into the virtual environment.
+
+        Parameters
+        ----------
+        packages : list of str, optional
+            List of package names to install via pip.
+        editable_packages : list of str, optional
+            List of local package paths to install in editable mode.
+        """
+        if packages is None:
+            packages = []
+        if editable_packages is None:
+            editable_packages = []
+
+        python = str(self.python)
+
+        for package in packages:
+            try:
+                subprocess.run([python, "-m", "pip", "install", package], check=True)
+            except Exception as err:
+                print(f"Error installing {package}: {err}")
+        for package in editable_packages:
+            try:
+                subprocess.run(
+                    [python, "-m", "pip", "install", "-e", package], check=True
+                )
+            except Exception as err:
+                print(f"Error installing editable {package}: {err}")
+
+    def _process_creation_context(self, context) -> None:
+        """
+        Stores the path to the Python executable in the venv after creation.
+
+        Parameters
+        ----------
+        context : venv.EnvBuilder.Context
+            The context object provided by EnvBuilder.
+        """
+        self._created_venv_exe = context.env_exe
 
 
 class Structure:
@@ -455,6 +604,13 @@ def creation_mode(args: argparse.Namespace):
     if args.init_git or get_prompt_bool(git_msg, args.prompt_mode, auto_decision=False):
         create_git_repository(project_path)
 
+    # Create ven and install package in editable mode if wanted
+    msg = "Initalise venv and install package in editable mode?"
+    if args.init_venv or get_prompt_bool(msg, args.prompt_mode, auto_decision=False):
+        virtual_env = VirtualEnvironment(project_path)
+        virtual_env.create()
+        virtual_env.install_packages(editable_packages=[str(project_path.resolve())])
+
 
 def get_sys_args():
     """Get the settings."""
@@ -484,6 +640,12 @@ def get_sys_args():
         "--init-git",
         action="store_true",
         help="initialise Git repository and commit created files (requires 'Git')",
+    )
+    parser.add_argument(
+        "-v",
+        "--init-venv",
+        action="store_true",
+        help="initialise a virtual environment and install package in editable mode",
     )
     parser.add_argument(
         "-l",
