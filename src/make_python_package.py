@@ -340,16 +340,20 @@ def get_git_config_value(key: str) -> str | None:
         return None
 
 
-def run_git_command(*args, cwd=None):
-    """Run a git command."""
-    subprocess.run(["git", *args], check=True, cwd=cwd)
+def run_git_command(*args, suppress_output: bool = False, **kwargs):
+    """Run a git command with 'args' ('kwargs' are passed to 'subprocess.run()')."""
+    kwargs.setdefault("check", True)
+    if suppress_output:
+        kwargs["stdout"] = subprocess.DEVNULL
+        kwargs["stderr"] = subprocess.DEVNULL
+    subprocess.run(["git", *args], **kwargs)
 
 
 def create_git_repository(path: Path):
     """Create git repository and stage and commit all files."""
     try:
         # Return if repository already exists
-        run_git_command("status", cwd=path)
+        run_git_command("status", cwd=path, suppress_output=True)
         warnings.warn(
             f"It seems like there already is a repository in {path}!",
             UserWarning,
@@ -387,7 +391,7 @@ def patch_default_settings(project_settings: ProjectSettings, args: argparse.Nam
             auto_decision=True,
         ):
             project_settings.github_repositoryname = args.name
-            print(f"Set '--github-repositoryname' to {args.name}...")
+            print(f"Set '--github-repositoryname' to {args.name}")
     if project_settings.is_default("author_name"):
         if git_user := get_git_config_value("user.name"):
             if get_prompt_bool(
@@ -396,7 +400,7 @@ def patch_default_settings(project_settings: ProjectSettings, args: argparse.Nam
                 auto_decision=True,
             ):
                 project_settings.author_name = git_user
-                print(f"Set '--author-name' to {git_user}...")
+                print(f"Set '--author-name' to {git_user}")
     if project_settings.is_default("author_mail"):
         if git_mail := get_git_config_value("user.email"):
             if get_prompt_bool(
@@ -405,7 +409,7 @@ def patch_default_settings(project_settings: ProjectSettings, args: argparse.Nam
                 auto_decision=True,
             ):
                 project_settings.author_mail = git_mail
-                print(f"Set '--author-mail' to {git_mail}...")
+                print(f"Set '--author-mail' to {git_mail}")
 
 
 def creation_mode(args: argparse.Namespace):
@@ -431,13 +435,14 @@ def creation_mode(args: argparse.Namespace):
         not get_prompt_bool(msg, args.prompt_mode, auto_decision=True)
         and args.prompt_mode != "no"
     ):
-        print(f"Creation aborted...")
+        print(f"Creation aborted")
         return
 
     # Create the package structure
     project_path = create_package_structure(
         destination_path, args.name, project_settings=project_settings
     )
+    print(f"Created project '{args.name}' at '{project_path}'")
 
     # Create git repository if wanted
     git_msg = "Initalise Git repository (requires 'Git')?"
