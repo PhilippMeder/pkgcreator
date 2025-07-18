@@ -171,6 +171,11 @@ class FileContent(dict):
         try:
             return get_license(self.project_settings.license_id)
         except Exception as err:
+            warning_text = (
+                f"Could not download license '{self.project_settings.license_id}'! "
+                f"({type(err).__qualname__}: {err})"
+            )
+            warnings.warn(warning_text, UserWarning, stacklevel=2)
             return ""
 
     def get_pyproject_toml(self):
