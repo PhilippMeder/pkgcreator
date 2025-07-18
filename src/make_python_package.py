@@ -415,6 +415,10 @@ def creation_mode(args: argparse.Namespace):
     project_settings.license_id = args.license
     destination_path = Path(args.destination)
 
+    if (guessed_package_path := destination_path / args.name).exists():
+        err_msg = f"'{guessed_package_path}' already exists!"
+        raise FileExistsError(err_msg)
+
     # Ask for some settings if not specified
     patch_default_settings(project_settings, args)
 
