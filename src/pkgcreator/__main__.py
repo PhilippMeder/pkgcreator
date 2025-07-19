@@ -12,6 +12,7 @@ from pkgcreator import (
     get_available_licenses,
     get_git_config_value,
 )
+from pkgcreator.logging_config import logger
 
 
 def get_prompt_bool(message: str, mode: str, auto_decision: bool = False) -> bool:
@@ -37,7 +38,7 @@ def patch_default_settings(project_settings: ProjectSettings, args: argparse.Nam
             auto_decision=True,
         ):
             project_settings.github_repositoryname = args.name
-            print(f"Set '--github-repositoryname' to {args.name}")
+            logger.info(f"Set '--github-repositoryname' to {args.name}")
 
     if GIT_AVAILABLE and project_settings.is_default("author_name"):
         if git_user := get_git_config_value("user.name"):
@@ -47,7 +48,7 @@ def patch_default_settings(project_settings: ProjectSettings, args: argparse.Nam
                 auto_decision=True,
             ):
                 project_settings.author_name = git_user
-                print(f"Set '--author-name' to {git_user}")
+                logger.info(f"Set '--author-name' to {git_user}")
 
     if GIT_AVAILABLE and project_settings.is_default("author_mail"):
         if git_mail := get_git_config_value("user.email"):
@@ -57,7 +58,7 @@ def patch_default_settings(project_settings: ProjectSettings, args: argparse.Nam
                 auto_decision=True,
             ):
                 project_settings.author_mail = git_mail
-                print(f"Set '--author-mail' to {git_mail}")
+                logger.info(f"Set '--author-mail' to {git_mail}")
 
 
 def creation_mode(args: argparse.Namespace):
@@ -84,13 +85,13 @@ def creation_mode(args: argparse.Namespace):
         not get_prompt_bool(msg, args.prompt_mode, auto_decision=True)
         and args.prompt_mode != "no"
     ):
-        print(f"Creation aborted")
+        logger.info(f"Creation aborted")
         return
 
     # Create the package structure with file content
     file_content = FileContent(project_settings)
     builder.create(file_content=file_content)
-    print(f"Created project '{builder.name}' at '{builder.project_path}'")
+    logger.info(f"Created project '{builder.name}' at '{builder.project_path}'")
 
     # Create git repository if wanted
     if GIT_AVAILABLE:
@@ -109,6 +110,12 @@ def creation_mode(args: argparse.Namespace):
         virtual_env.install_packages(
             editable_packages=[str(builder.project_path.resolve())]
         )
+
+
+def list_licenses_mode():
+    available_licenses = get_available_licenses()
+    licenses_str = ", ".join(available_licenses.keys())
+    logger.info(f"Available licenses are:\n{licenses_str}")
 
 
 def get_sys_args():
@@ -165,11 +172,15 @@ def get_sys_args():
 def main():
     args = get_sys_args()
     if args.list_licenses:
-        available_licenses = get_available_licenses()
-        licenses_str = ", ".join(available_licenses.keys())
-        print(f"Available licenses are:\n{licenses_str}")
+        try:
+            list_licenses_mode()
+        except ImportError as err:
+            logger.error(err, exc_info=True)
     else:
-        creation_mode(args)
+        try:
+            creation_mode(args)
+        except OSError as err:
+            logger.error(err, exc_info=True)
 
 
 if __name__ == "__main__":

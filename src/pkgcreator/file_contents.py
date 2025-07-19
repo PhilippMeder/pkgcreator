@@ -1,8 +1,8 @@
-import warnings
 from pathlib import Path
 from sys import version_info
 
 from pkgcreator import ProjectSettings
+from pkgcreator.logging_config import logger
 
 # There is a soft dependency on "requests" for get_available_licenses()/get_license()
 
@@ -42,11 +42,9 @@ class FileContent(dict):
         try:
             return get_license(self.project_settings.license_id)
         except Exception as err:
-            warning_text = (
-                f"Could not download license '{self.project_settings.license_id}'! "
-                f"({type(err).__qualname__}: {err})"
-            )
-            warnings.warn(warning_text, UserWarning, stacklevel=2)
+            msg = f"Could not download license '{self.project_settings.license_id}'"
+            logger.error(err, exc_info=True)
+            logger.warning(msg, exc_info=True)
             return ""
 
     def get_pyproject_toml(self):
@@ -63,6 +61,7 @@ class FileContent(dict):
             min_python = f"{version_info.major}.{version_info.minor:02}"
         except Exception as err:
             min_python = "3.00"
+            logger.warning(err, exc_info=True)
         return (
             f"""[project]\nname = "{project.name}"\nversion = "0.1"\n"""
             f"""authors = [{{ {author_str} }},]\n"""

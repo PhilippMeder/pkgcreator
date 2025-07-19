@@ -1,6 +1,8 @@
 import argparse
 from pathlib import Path
 
+from pkgcreator.logging_config import logger
+
 # There is a soft dependency on "requests" for GithubRepository().download()
 
 
@@ -166,7 +168,7 @@ class GithubRepository:
             if item["type"] == "file":
                 download_url = item["download_url"]
                 file_path = destination / name
-                print(f"Downloading {name}...")
+                logger.info(f"Downloading {name}...")
                 file_response = requests.get(download_url)
                 file_response.raise_for_status()
                 # The following line is fine, pathlib uses a proper context manager
@@ -254,11 +256,14 @@ def main():
     else:
         destination = args.destination
 
-    repository.download(
-        destination=destination,
-        subfolder=args.subfolder,
-        recursively=not args.no_recursive,
-    )
+    try:
+        repository.download(
+            destination=destination,
+            subfolder=args.subfolder,
+            recursively=not args.no_recursive,
+        )
+    except ImportError as err:
+        logger.error(err, exc_info=True)
 
 
 if __name__ == "__main__":

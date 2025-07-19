@@ -1,9 +1,10 @@
 import argparse
 import subprocess
 import venv
-import warnings
 from pathlib import Path
 from sys import version_info
+
+from pkgcreator.logging_config import logger
 
 
 class ConcreteEnvBuilder(venv.EnvBuilder):
@@ -114,10 +115,10 @@ class VirtualEnvironment:
             msg = f"{self.venv_dir} already exists!"
             raise FileExistsError(msg)
 
-        print(f"Creating venv in {self.venv_dir} (this may take some time)...")
+        logger.info(f"Creating venv in {self.venv_dir} (this may take some time)...")
         builder = ConcreteEnvBuilder(creation_callback=self._process_creation_context)
         builder.create(self.venv_dir)
-        print(f"Finished creating venv in {self.venv_dir}.")
+        logger.info(f"Finished creating venv in {self.venv_dir}.")
 
     def install_packages(
         self, packages: list[str] = None, editable_packages: list[str] = None
@@ -143,14 +144,16 @@ class VirtualEnvironment:
             try:
                 subprocess.run([python, "-m", "pip", "install", package], check=True)
             except Exception as err:
-                print(f"Error installing {package}: {err}")
+                logger.error(f"Did not install package {package}: {err}", exc_info=True)
         for package in editable_packages:
             try:
                 subprocess.run(
                     [python, "-m", "pip", "install", "-e", package], check=True
                 )
             except Exception as err:
-                print(f"Error installing editable {package}: {err}")
+                logger.error(
+                    f"Did not install editable package {package}: {err}", exc_info=True
+                )
 
     def _process_creation_context(self, context) -> None:
         """
@@ -215,7 +218,7 @@ def main():
             this_venv.create()
         except FileExistsError as err:
             warning_msg = f"Could not create virtual environment: {err}"
-            warnings.warn(warning_msg, UserWarning, stacklevel=2)
+            logger.error(warning_msg, exc_info=True)
 
     if args.install or args.editable:
         try:
@@ -225,7 +228,7 @@ def main():
             )
         except FileNotFoundError as err:
             warning_msg = f"Error: {err}\nIs the virtual environment already created?"
-            warnings.warn(warning_msg, UserWarning, stacklevel=2)
+            logger.error(warning_msg, exc_info=True)
 
 
 if __name__ == "__main__":

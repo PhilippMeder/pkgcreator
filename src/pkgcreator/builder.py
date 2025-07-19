@@ -39,7 +39,7 @@ class ProjectSettings:
         """Return value of attribute 'name', but take care of default values."""
         value = super().__getattribute__(name)
         if value is None and name in self.get_url_fields():
-            return self.github_repository.get_url(name)
+            return self.github_repository.get_url(name, branch=False)
         else:
             return value
 
