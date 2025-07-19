@@ -275,7 +275,7 @@ def get_sys_args():
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main():
     args = get_sys_args()
 
     repository = GitRepository(args.path)
@@ -283,3 +283,7 @@ if __name__ == "__main__":
     if args.commit:
         repository.add()
         repository.commit(args.message)
+
+
+if __name__ == "__main__":
+    main()

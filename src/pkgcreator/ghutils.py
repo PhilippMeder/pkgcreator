@@ -243,7 +243,7 @@ def get_sys_args():
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main():
     args = get_sys_args()
 
     repository = GithubRepository(
@@ -259,3 +259,7 @@ if __name__ == "__main__":
         subfolder=args.subfolder,
         recursively=not args.no_recursive,
     )
+
+
+if __name__ == "__main__":
+    main()

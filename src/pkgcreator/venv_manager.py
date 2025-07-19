@@ -201,7 +201,7 @@ def get_sys_args():
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main():
     args = get_sys_args()
 
     this_venv = VirtualEnvironment(
@@ -226,3 +226,7 @@ if __name__ == "__main__":
         except FileNotFoundError as err:
             warning_msg = f"Error: {err}\nIs the virtual environment already created?"
             warnings.warn(warning_msg, UserWarning, stacklevel=2)
+
+
+if __name__ == "__main__":
+    main()

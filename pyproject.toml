@@ -23,4 +23,6 @@ Source = "https://github.com/PhilippMeder/pkgcreator.git"
 
 [project.scripts]
 pkgcreator = "pkgcreator.__main__:main"
-pkgcreator-ghdownload = "pkgcreator.ghutils"
+pkgcreator-ghdownload = "pkgcreator.ghutils:main"
+pkgcreator-git = "pkgcreator.gitrepo:main"
+pkgcreator-venv = "pkgcreator.venv_manager:main"
