@@ -5,6 +5,12 @@ from pathlib import Path
 from pkgcreator import GithubRepository
 
 
+class PackageExistsError(FileExistsError):
+    """Exception class when package directory already exists."""
+
+    pass
+
+
 @dataclass(kw_only=True)
 class ProjectSettings:
 
@@ -169,6 +175,9 @@ class PythonPackage:
         }
 
     def create(self, file_content: dict = None):
+        if self.project_path.exists():
+            msg = f"The project path '{self.project_path}' already exists!"
+            raise PackageExistsError(msg)
         create_dir_structure(self.parent_dir, self.structure, file_content=file_content)
 
     def get_all_filenames(self):
