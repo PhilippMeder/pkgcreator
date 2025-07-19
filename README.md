@@ -1,6 +1,6 @@
 # Code Snippets
 
-**Useful small tools, esp. for code development and worklflow.**
+**Useful small tools, esp. for code development and workflow.**
 
 Developed and maintained by [Philipp Meder](https://github.com/philippmeder).
 

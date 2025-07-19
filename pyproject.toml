@@ -1,0 +1,25 @@
+[project]
+name = "pkgcreator"
+version = "0.1"
+authors = [{ name="Philipp Meder", email="148459685+PhilippMeder@users.noreply.github.com"  },]
+description = "Create python package structure, necessary files with content, git repository and venv."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.13"
+dependencies = []
+classifiers=[
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Changelog = "https://github.com/PhilippMeder/pkgcreator/commits"
+Documentation = "https://github.com/PhilippMeder/pkgcreator/README.md"
+Download = "https://github.com/PhilippMeder/pkgcreator"
+Homepage = "https://github.com/PhilippMeder/pkgcreator"
+Issues = "https://github.com/PhilippMeder/pkgcreator/issues"
+Releasenotes = "https://github.com/PhilippMeder/pkgcreator/commits"
+Source = "https://github.com/PhilippMeder/pkgcreator.git"
+
+[project.scripts]
+pkgcreator = "pkgcreator.__main__:main"
