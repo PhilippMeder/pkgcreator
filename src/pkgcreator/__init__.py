@@ -9,6 +9,5 @@ from pkgcreator.gitrepo import (
     GIT_AVAILABLE,
     get_git_config_value,
     run_git_command,
-    subprocess_output_to_logger,
 )
 from pkgcreator.venv_manager import VirtualEnvironment

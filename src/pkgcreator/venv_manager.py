@@ -4,7 +4,7 @@ import venv
 from pathlib import Path
 from sys import version_info
 
-from pkgcreator.logging_config import logger
+from pkgcreator.logging_config import logger, logged_subprocess_run
 
 
 class ConcreteEnvBuilder(venv.EnvBuilder):
@@ -121,7 +121,7 @@ class VirtualEnvironment:
         logger.info(f"Finished creating venv in {self.venv_dir}.")
 
     def install_packages(
-        self, packages: list[str] = None, editable_packages: list[str] = None
+        self, packages: list[str] = None, editable_packages: list[str] = None, **kwargs
     ) -> None:
         """
         Install normal and editable packages into the virtual environment.
@@ -132,24 +132,29 @@ class VirtualEnvironment:
             List of package names to install via pip.
         editable_packages : list of str, optional
             List of local package paths to install in editable mode.
+        **kwargs
+            Additional keyword arguments passed to `subprocess.run`.
         """
         if packages is None:
             packages = []
         if editable_packages is None:
             editable_packages = []
+        kwargs.setdefault("check", True)
+        kwargs.setdefault("text", True)
+        kwargs.setdefault("stdout", subprocess.PIPE)
+        kwargs.setdefault("stderr", subprocess.PIPE)
 
         python = str(self.python)
 
         for package in packages:
             try:
-                subprocess.run([python, "-m", "pip", "install", package], check=True)
+                pip_install(python, package, logger=logger, **kwargs)
             except Exception as err:
                 logger.error(f"Did not install package {package}: {err}", exc_info=True)
+
         for package in editable_packages:
             try:
-                subprocess.run(
-                    [python, "-m", "pip", "install", "-e", package], check=True
-                )
+                pip_install(python, package, "-e", logger=logger, **kwargs)
             except Exception as err:
                 logger.error(
                     f"Did not install editable package {package}: {err}", exc_info=True
@@ -165,6 +170,46 @@ class VirtualEnvironment:
             The context object provided by EnvBuilder.
         """
         self._created_venv_exe = context.env_exe
+
+
+def pip_install(
+    python: str, package: str, *pip_args, silent: bool = False, logger=None, **kwargs
+):
+    """
+    Install a Python package using `pip` via a given Python interpreter.
+
+    This function constructs and runs a pip install command like:
+    `[python, -m, pip, install, *pip_args, package]`.
+
+    If a logger is provided and `silent` is False, output is streamed
+    in real time using `logged_subprocess_run`. Otherwise, `subprocess.run`
+    is used directly.
+
+    Parameters
+    ----------
+    python : str
+        Path to the Python interpreter to use for the pip command.
+    package : str
+        The name of the package to install.
+    *pip_args : str
+        Additional arguments passed to `pip install` (e.g., `--upgrade`, `--no-cache-dir`).
+    silent : bool, optional
+        If True, disables logging even if a logger is provided. Default is False.
+    logger : logging.Logger, optional
+        Logger used to stream real-time output of the install command. If None, no logging is used.
+    **kwargs : dict
+        Additional keyword arguments passed to `subprocess.run()` or `logged_subprocess_run()`.
+
+    Returns
+    -------
+    subprocess.CompletedProcess
+        The result of the subprocess call, containing the exit code and (if captured) output.
+    """
+    command = [python, "-m", "pip", "install", *pip_args, package]
+    if logger and not silent:
+        return logged_subprocess_run(command, logger=logger, **kwargs)
+    else:
+        return subprocess.run(command, **kwargs)
 
 
 def get_sys_args():

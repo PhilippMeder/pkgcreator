@@ -2,7 +2,7 @@ import argparse
 import subprocess
 from pathlib import Path
 
-from pkgcreator.logging_config import logger
+from pkgcreator.logging_config import logger, logged_subprocess_run
 
 
 class GitNotAvailableError(OSError):
@@ -24,7 +24,7 @@ class GitRepositoryNotFoundError(FileNotFoundError):
 
 
 def run_git_command(
-    *args, silent: bool = False, **kwargs
+    *args, silent: bool = False, logger=None, **kwargs
 ) -> subprocess.CompletedProcess:
     """
     Run a Git command.
@@ -35,6 +35,8 @@ def run_git_command(
         Git command arguments (e.g., "status", "add", etc.).
     silent : bool, optional
         If True, suppress stdout and stderr (default is False).
+    logger : logging.Logger, optional
+        If provided, stream the subprocess output live to the logger.
     **kwargs
         Additional keyword arguments passed to `subprocess.run`.
 
@@ -57,7 +59,10 @@ def run_git_command(
         kwargs["stdout"] = subprocess.DEVNULL
         kwargs["stderr"] = subprocess.DEVNULL
 
-    return subprocess.run(["git", *args], **kwargs)
+    if logger and not silent:
+        return logged_subprocess_run(["git", *args], logger=logger, **kwargs)
+    else:
+        return subprocess.run(["git", *args], **kwargs)
 
 
 def get_git_config_value(key: str) -> str | None:
@@ -113,6 +118,8 @@ class GitRepository:
     ----------
     path : str or Path
         Path to the target Git repository directory.
+    logger : logging.Logger, optional
+        If provided, stream the git command output live to the logger.
 
     Raises
     ------
@@ -120,11 +127,12 @@ class GitRepository:
         If Git is not available on the system.
     """
 
-    def __init__(self, path: str | Path):
+    def __init__(self, path: str | Path, logger=None):
         if not GIT_AVAILABLE:
             msg = "'Git' is not available on this system!"
             raise GitNotAvailableError(msg)
         self._path = Path(path)
+        self.logger = logger
 
     @property
     def path(self) -> Path:
@@ -133,7 +141,7 @@ class GitRepository:
 
     def run_command(self, *args, **kwargs) -> subprocess.CompletedProcess:
         """Run a Git command in the context of the repository."""
-        return run_git_command(*args, cwd=self.path, **kwargs)
+        return run_git_command(*args, cwd=self.path, logger=self.logger, **kwargs)
 
     def exists(self) -> bool:
         """
@@ -272,31 +280,21 @@ def get_sys_args():
     return parser.parse_args()
 
 
-def subprocess_output_to_logger(result: subprocess.CompletedProcess):
-    if result.stdout:
-        logger.info(result.stdout.strip())
-    if result.stderr:
-        logger.error(result.stderr.strip())
-
-
 def main():
     args = get_sys_args()
 
     try:
-        repository = GitRepository(args.path)
+        repository = GitRepository(args.path, logger=logger)
     except GitNotAvailableError as err:
         logger.error(err, exc_info=True)
     try:
-        result = repository.init(branch=args.branch)
-        subprocess_output_to_logger(result)
+        repository.init(branch=args.branch)
     except GitRepositoryExistsError as err:
         logger.error(err, exc_info=True)
     try:
         if args.commit:
-            result = repository.add()
-            subprocess_output_to_logger(result)
-            result = repository.commit(args.message)
-            subprocess_output_to_logger(result)
+            repository.add()
+            repository.commit(args.message)
     except GitRepositoryNotFoundError as err:
         logger.error(err, exc_info=True)
     except subprocess.CalledProcessError as err:
