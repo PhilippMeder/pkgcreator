@@ -55,12 +55,12 @@ class ProjectSettings:
     @property
     def github(self) -> str:
         """Return the link to the github repository."""
-        return self.github_repository.get_url()
+        return self.github_repository.get_url(branch=False)
 
     @property
     def github_owner(self) -> str:
         """Return the link to the owner of the github repository."""
-        return self.github_repository.get_url("owner")
+        return self.github_repository.get_url("owner", branch=False)
 
     @staticmethod
     def get_url_fields():
