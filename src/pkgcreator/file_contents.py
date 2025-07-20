@@ -2,6 +2,7 @@ from pathlib import Path
 from sys import version_info
 
 from pkgcreator import ProjectSettings
+from pkgcreator.filetypes import Readme
 from pkgcreator.logging_config import logger
 
 # There is a soft dependency on "requests" for get_available_licenses()/get_license()
@@ -77,17 +78,35 @@ class FileContent(dict):
     def get_readme(self):
         """Return default value for 'README' according to 'project_settings'."""
         project = self.project_settings
-        return (
-            f"# {project.name}\n\n**{project.description}**\n\n"
-            "Developed and maintained by "
-            f"[{project.author_name}]({project.github_owner}).\n\n"
-            f"* **Source code:** {project.source}\n"
-            f"* **Report bugs:** {project.issues}\n\n"
-            f"## License\n\nDistributed under the [{self.license_name}](./LICENSE).\n\n"
-            "## Features\n\n1. [FEATURE 1](#feature-1)\n2. [FEATURE 2](#feature-2)\n\n"
-            "### FEATURE 1\n\n### FEATURE 2\n\n"
-            "## Requirements"
-        )
+        # Create Readme object and define the links needed later
+        file = Readme()
+        author_link = file.link(project.author_name, project.github_owner)
+        links = {"Source code": project.source, "Report bugs": project.issues}
+        license_link = file.link(self.license_name, "./LICENSE")
+
+        # General information about the package
+        file.add_heading(project.name, to_toc=False)
+        file.add_text(project.description, bold=True)
+        file.add_text(f"\nDeveloped and maintained by {author_link}.\n")
+        file.add_named_list(links)
+
+        # License information
+        file.add_heading("License", level=1, to_toc=False)
+        file.add_text(f"Distributed under the {license_link}.")
+
+        # List of features
+        file.add_heading("Features", level=1, to_toc=False)
+        file.add_toc()
+        for feature in [f"Feature {idx}" for idx in range(5)]:
+            file.add_heading(feature, level=2)
+            file.add_text(f"Description for feature {feature}")
+        file.add_toc(clear=True)
+
+        # Requirements
+        file.add_heading("Requirements", level=1, to_toc=False)
+        file.add_list(*[f"required-package-{idx}" for idx in range(5)])
+
+        return file.content
 
 
 def get_available_licenses(api_url: str = None):
