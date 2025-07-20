@@ -10,6 +10,7 @@ COLORS = {
     logging.WARNING: "\033[33m",  # yellow
     logging.ERROR: "\033[31m",  # red
     logging.CRITICAL: "\033[41m",  # red background
+    "SUCCESS": "\033[92m",  # green
 }
 
 
@@ -35,7 +36,7 @@ class LoggerFormatter(logging.Formatter):
         message = record.getMessage()
 
         if record.levelno == logging.INFO:
-            title = ""
+            title = f"{COLORS.get("SUCCESS", RESET)}[INFO]{RESET} "
             description = ""
         elif record.levelno == logging.WARNING:
             title = "[WARNING]"

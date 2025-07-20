@@ -2,6 +2,8 @@ import argparse
 import subprocess
 from pathlib import Path
 
+from pkgcreator.logging_config import logger
+
 
 class GitNotAvailableError(OSError):
     """Exception class when no Git installation was not found."""
@@ -47,6 +49,10 @@ def run_git_command(
         If the Git command fails and `check=True`.
     """
     kwargs.setdefault("check", True)
+    kwargs.setdefault("text", True)
+    kwargs.setdefault("stdout", subprocess.PIPE)
+    kwargs.setdefault("stderr", subprocess.PIPE)
+
     if silent:
         kwargs["stdout"] = subprocess.DEVNULL
         kwargs["stderr"] = subprocess.DEVNULL
@@ -148,7 +154,6 @@ class GitRepository:
         self,
         *git_init_options: str,
         branch: str = "main",
-        commit: bool = False,
     ) -> subprocess.CompletedProcess:
         """
         Initialize a new Git repository.
@@ -159,8 +164,6 @@ class GitRepository:
             Additional options for `git init`.
         branch : str, optional
             Initial branch name (default is "main").
-        commit : bool, optional
-            If True, stage all files and make an initial commit (default is False).
 
         Returns
         -------
@@ -173,16 +176,10 @@ class GitRepository:
             If a repository exists and `raise_err=True`.
         """
         if self.exists():
-            msg = f"A Git repository already exists in {self.path}!"
+            msg = f"A Git repository already exists in {self.path.resolve()}!"
             raise GitRepositoryExistsError(msg)
 
-        init_res = self.run_command("init", "-b", branch, *git_init_options)
-
-        if commit:
-            self.add()
-            self.commit("Created repository and inital commit")
-
-        return init_res
+        return self.run_command("init", "-b", branch, *git_init_options)
 
     def add(
         self, *git_add_options: str, files: list[str] = None
@@ -275,14 +272,36 @@ def get_sys_args():
     return parser.parse_args()
 
 
+def subprocess_output_to_logger(result: subprocess.CompletedProcess):
+    if result.stdout:
+        logger.info(result.stdout.strip())
+    if result.stderr:
+        logger.error(result.stderr.strip())
+
+
 def main():
     args = get_sys_args()
 
-    repository = GitRepository(args.path)
-    repository.init(branch=args.branch, commit=False)
-    if args.commit:
-        repository.add()
-        repository.commit(args.message)
+    try:
+        repository = GitRepository(args.path)
+    except GitNotAvailableError as err:
+        logger.error(err, exc_info=True)
+    try:
+        result = repository.init(branch=args.branch)
+        subprocess_output_to_logger(result)
+    except GitRepositoryExistsError as err:
+        logger.error(err, exc_info=True)
+    try:
+        if args.commit:
+            result = repository.add()
+            subprocess_output_to_logger(result)
+            result = repository.commit(args.message)
+            subprocess_output_to_logger(result)
+    except GitRepositoryNotFoundError as err:
+        logger.error(err, exc_info=True)
+    except subprocess.CalledProcessError as err:
+        msg = f"Probably nothing to commit: {err}"
+        logger.warning(msg, exc_info=True)
 
 
 if __name__ == "__main__":

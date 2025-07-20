@@ -11,6 +11,7 @@ from pkgcreator import (
     GIT_AVAILABLE,
     get_available_licenses,
     get_git_config_value,
+    subprocess_output_to_logger,
 )
 from pkgcreator.logging_config import logger
 
@@ -100,7 +101,12 @@ def creation_mode(args: argparse.Namespace):
             git_msg, args.prompt_mode, auto_decision=False
         ):
             git_repository = GitRepository(builder.project_path)
-            git_repository.init(commit=True)
+            result = git_repository.init()
+            subprocess_output_to_logger(result)
+            result = git_repository.add()
+            subprocess_output_to_logger(result)
+            result = git_repository.commit("Created repository and initial commit")
+            subprocess_output_to_logger(result)
 
     # Create ven and install package in editable mode if wanted
     msg = "Initalise venv and install package in editable mode?"
