@@ -2,7 +2,7 @@ from pathlib import Path
 from sys import version_info
 
 from pkgcreator import ProjectSettings
-from pkgcreator.filetypes import Readme
+from pkgcreator.filetypes import Readme, Toml
 from pkgcreator.logging_config import logger
 
 # There is a soft dependency on "requests" for get_available_licenses()/get_license()
@@ -51,29 +51,37 @@ class FileContent(dict):
     def get_pyproject_toml(self):
         """Return default value for 'pyproject.toml' according to 'project_settings'."""
         project = self.project_settings
-        author_str = f"""name="{project.author_name}", email="{project.author_mail}" """
-        url_str = "".join(
-            [
-                f"""{name.capitalize()} = "{_url}"\n"""
-                for name, _url in project.urls.items()
-            ]
-        )
         try:
             min_python = f"{version_info.major}.{version_info.minor:02}"
         except Exception as err:
             min_python = "3.00"
             logger.warning(err, exc_info=True)
-        return (
-            f"""[project]\nname = "{project.name}"\nversion = "0.1"\n"""
-            f"""authors = [{{ {author_str} }},]\n"""
-            f"""description = "{project.description}"\nreadme = "README.md"\n"""
-            """license = { file = "LICENSE" }\n"""
-            f"""requires-python = ">={min_python}"\n"""
-            """dependencies = []\n"""
-            """classifiers=[\n    "Programming Language :: Python :: 3",\n    """
-            """"Operating System :: OS Independent",\n]"""
-            f"""\n\n[project.urls]\n{url_str}"""
-        )
+
+        content = {
+            "name": project.name,
+            "version": "0.1",
+            "license": {"file": "LICENSE"},
+            "description": project.description,
+            "readme": "README.md",
+            "authors": [{"name": project.author_name, "email": project.author_mail}],
+            "maintainers": [
+                {"name": project.author_name, "email": project.author_mail}
+            ],
+            "requires-python": f">={min_python}",
+            "dependencies": [],
+            "classifiers": [
+                "Programming Language :: Python :: 3",
+                "Operating System :: OS Independent",
+            ],
+        }
+
+        toml = Toml()
+        toml.add_heading("project")
+        toml.add_easy(content)
+        toml.add_heading("project.urls")
+        toml.add_easy(project.urls)
+
+        return toml.content
 
     def get_readme(self):
         """Return default value for 'README' according to 'project_settings'."""

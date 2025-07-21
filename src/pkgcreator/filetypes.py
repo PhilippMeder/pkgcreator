@@ -1,6 +1,7 @@
 class BaseFileType:
 
     newline = "\n"
+    tab = f"{'':4}"
 
     def __init__(self):
         self._lines = []
@@ -18,6 +19,8 @@ class BaseFileType:
 
 
 class Readme(BaseFileType):
+
+    tab = f"{'':2}"
 
     def __init__(self, *args, **kwargs):
         self._headings = []
@@ -106,10 +109,64 @@ class Readme(BaseFileType):
     def linkname_internal(text: str) -> str:
         return f"#{text.lower().replace(" ", "-").replace("_", "-")}"
 
-    @staticmethod
-    def listitem(text: str, index: int = None, level: int = 0) -> str:
+    @classmethod
+    def listitem(cls, text: str, index: int = None, level: int = 0) -> str:
         symbol = "-" if index is None else f"{index}."
-        return f"{"  "*level}{symbol} {text}"
+        return f"{cls.tab*level}{symbol} {text}"
+
+
+class Toml(BaseFileType):
+
+    def add_heading(self, text: str):
+        if self.lines:
+            self._lines.append(f"{self.newline}[{text}]")
+        else:
+            self._lines.append(f"[{text}]")
+
+    def add_dictionary(self, name: str, items: dict):
+        self._lines.append(self.variable(name, self.dictionary(items), bare_value=True))
+
+    def add_list(self, name: str, items: list):
+        content = [
+            self.dictionary(item) if isinstance(item, dict) else f'"{item}"'
+            for item in items
+        ]
+        if not content:
+            self._lines.append(self.variable(name, "[]", bare_value=True))
+            return
+        if len(content) < 2:
+            self._lines.append(self.variable(name, f"[{content[0]}]", bare_value=True))
+            return
+        # Multinline list
+        self._lines.append(self.variable(name, "[", bare_value=True))
+        self._lines += [f"{self.tab}{item}," for item in content]
+        self._lines.append("]")
+
+    def add_variable(self, name: str, value: str):
+        self._lines.append(self.variable(name, value))
+
+    def add_easy(self, content: dict):
+        for name, value in content.items():
+            if isinstance(value, list):
+                self.add_list(name, value)
+            elif isinstance(value, dict):
+                self.add_dictionary(name, value)
+            else:
+                self.add_variable(name, value)
+
+    @classmethod
+    def dictionary(cls, items: dict) -> str:
+        content = [cls.variable(name, value) for name, value in items.items()]
+        return "{" + ", ".join(content) + "}"
+
+    @staticmethod
+    def variable(name: str, value: str, bare_value: bool = False) -> str:
+        if " " in name:
+            name = f'"{name}"'
+        if bare_value:
+            return f"{name} = {value}"
+        else:
+            return f'{name} = "{value}"'
 
 
 if __name__ == "__main__":
