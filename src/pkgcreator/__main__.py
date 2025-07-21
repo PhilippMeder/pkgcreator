@@ -140,7 +140,10 @@ def get_sys_args():
         "--destination",
         metavar="PATH",
         default=".",
-        help="destination directory for the package structure (default: %(default)s)",
+        help=(
+            "destination directory for the package structure "
+            "(default: current working directory)"
+        ),
     )
     parser.add_argument(
         "-m",
@@ -148,15 +151,20 @@ def get_sys_args():
         choices=["ask", "yes", "no", "auto"],
         default="ask",
         help=(
-            "control prompts for user interaction: ask (default), yes (always accept), "
-            "no (always decline), auto (decide automatically)"
+            "control prompts for user interaction: ask, yes (always accept), "
+            "no (always decline), auto (decide automatically) (default: %(default)s)"
         ),
     )
+    reset_color = "\033[0m"
+    git_color = reset_color if GIT_AVAILABLE else "\033[31m"
     parser.add_argument(
         "--git",
         dest="init_git",
         action="store_true",
-        help="initialise Git repository and commit created files (requires 'Git')",
+        help=(
+            "initialise Git repository and commit created files "
+            f"({git_color}requires 'Git'{reset_color})"
+        ),
     )
     parser.add_argument(
         "--venv",

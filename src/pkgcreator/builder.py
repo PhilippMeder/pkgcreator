@@ -122,7 +122,7 @@ class ProjectSettings:
                     "-l",
                     "--license",
                     dest="license_id",
-                    metavar="IDENTIFIER",
+                    metavar="LICENSE_ID",
                     help="license to include in the package (default: %(default)s)",
                     default=None,
                 )
