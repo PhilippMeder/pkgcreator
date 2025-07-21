@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 from sys import version_info
 
@@ -39,16 +40,26 @@ class FileContent(dict):
 
     def get_license(self):
         """Return license text according to 'project_settings.license_id'."""
-        if self.project_settings.license_id is None:
+        project = self.project_settings
+        if project.license_id is None:
             return ""
-        logger.info(f"Try to get license {self.project_settings.license_id}")
+        logger.info(f"Try to get license {project.license_id}")
         try:
-            return get_license(self.project_settings.license_id)
+            license_text = get_license(project.license_id)
         except Exception as err:
-            msg = f"Could not download license '{self.project_settings.license_id}'"
+            msg = f"Could not download license '{project.license_id}'"
             logger.error(err, exc_info=True)
             logger.warning(msg, exc_info=True)
             return ""
+
+        try:
+            license_text = license_text.replace("[fullname]", project.author_name)
+            license_text = license_text.replace("[year]", str(datetime.today().year))
+        except Exception as err:
+            logger.error(err, exc_info=True)
+            logger.warning("Could not set author/year in license text", exc_info=True)
+
+        return license_text
 
     def get_pyproject_toml(self):
         """Return default value for 'pyproject.toml' according to 'project_settings'."""
