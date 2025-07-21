@@ -20,6 +20,7 @@ class FileContent(dict):
             self.license_name = "LICENSENAME"
         kwargs.setdefault("pyproject.toml", self.get_pyproject_toml())
         kwargs.setdefault("README.md", self.get_readme())
+        kwargs.setdefault("__main__.py", self.get_main_py())
         super().__init__(**kwargs)
 
     @staticmethod
@@ -40,6 +41,7 @@ class FileContent(dict):
         """Return license text according to 'project_settings.license_id'."""
         if self.project_settings.license_id is None:
             return ""
+        logger.info(f"Try to get license {self.project_settings.license_id}")
         try:
             return get_license(self.project_settings.license_id)
         except Exception as err:
@@ -80,6 +82,9 @@ class FileContent(dict):
         toml.add_easy(content)
         toml.add_heading("project.urls")
         toml.add_easy(project.urls)
+        if project.make_script:
+            toml.add_heading("project.scripts")
+            toml.add_variable(project.name, f"{project.name}.__main__:main")
 
         return toml.content
 
@@ -102,6 +107,14 @@ class FileContent(dict):
         file.add_heading("License", level=1, to_toc=False)
         file.add_text(f"Distributed under the {license_link}.")
 
+        # Add example call if package is callable
+        if project.make_script:
+            file.add_heading("Usage", level=1, to_toc=False)
+            file.add_text("You may directly call one of the two following lines:")
+            file.add_codeblock(
+                [f"{project.name} [OPTIONS]", f"python -m {project.name} [OPTIONS]"]
+            )
+
         # List of features
         file.add_heading("Features", level=1, to_toc=False)
         file.add_toc()
@@ -115,6 +128,22 @@ class FileContent(dict):
         file.add_list(*[f"required-package-{idx}" for idx in range(5)])
 
         return file.content
+
+    def get_main_py(self):
+        """Basic content for __main__.py"""
+        name = self.project_settings.name
+        tab = f"{'':4}"
+        return "\n".join(
+            [
+                "def main():",
+                f'{tab}"""Entry point for "{name}"and "python -m {name}"."""',
+                "",
+                "",
+                'if __name__ == "__main__":',
+                f"{tab}main()",
+                "",
+            ]
+        )
 
 
 def get_available_licenses(api_url: str = None):

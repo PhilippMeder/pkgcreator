@@ -66,10 +66,10 @@ def creation_mode(args: argparse.Namespace):
     """Run the creation process."""
     # Setup the project settings
     project_settings = ProjectSettings.from_argparser(args)
-    # project_settings.license_id = args.license
+    project_settings.make_script = args.make_script
     destination_path = Path(args.destination)
 
-    builder = PythonPackage(destination_path, args.name)
+    builder = PythonPackage(destination_path, args.name, add_main=args.make_script)
     if builder.project_path.exists():
         msg = f"The project path '{builder.project_path}' already exists!"
         raise PackageExistsError(msg)
@@ -153,6 +153,15 @@ def get_sys_args():
         help=(
             "control prompts for user interaction: ask, yes (always accept), "
             "no (always decline), auto (decide automatically) (default: %(default)s)"
+        ),
+    )
+    parser.add_argument(
+        "--script",
+        dest="make_script",
+        action="store_true",
+        help=(
+            "make package callable as a script, i.e. create '__main__.py' with "
+            "function 'main()' and use it as entry point for script <NAME>"
         ),
     )
     reset_color = "\033[0m"

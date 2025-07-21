@@ -157,10 +157,17 @@ class ProjectSettings:
 
 class PythonPackage:
 
-    def __init__(self, destination: str | Path, name: str, dir_name: str = None):
+    def __init__(
+        self,
+        destination: str | Path,
+        name: str,
+        dir_name: str = None,
+        add_main: bool = False,
+    ):
         self._parent_dir = Path(destination)
         self._dir_name = dir_name or name
         self._name = name
+        self.add_main = add_main
         self._set_project_path()
 
     @property
@@ -193,9 +200,12 @@ class PythonPackage:
 
     @property
     def structure(self) -> dict:
+        module_files = ["__init__.py"]
+        if self.add_main:
+            module_files.append("__main__.py")
         return {
             self.dir_name: {
-                "src": {self.name: {"FILES": ["__init__.py"]}},
+                "src": {self.name: {"FILES": module_files}},
                 "FILES": ["LICENSE", "README.md", "pyproject.toml", ".gitignore"],
             }
         }

@@ -65,6 +65,13 @@ class Readme(BaseFileType):
     def add_rule(self):
         self._lines.append(f"{self.newline}---{self.newline}")
 
+    def add_codeblock(self, code: str | list[str], language: str = "bash"):
+        if isinstance(code, str):
+            code = [code]
+        self._lines.append(f"```{language}")
+        self._lines += code
+        self._lines.append("```")
+
     def add_toc(self, here: bool = False, clear: bool = False):
         """If 'here', place toc here, otherwise place at mark or make mark."""
         if here:
