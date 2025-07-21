@@ -14,9 +14,9 @@ class PackageExistsError(FileExistsError):
 @dataclass(kw_only=True)
 class ProjectSettings:
 
+    license_id: str = None
     name: str = "PACKAGENAME"
     description: str = "PACKAGEDESCRIPTION"
-    license_id: str = None
     author_name: str = "AUTHORNAME"
     author_mail: str = "AUTHORMAIL@SOMETHING.com"
     github_username: str = "USERNAME"
@@ -103,21 +103,47 @@ class ProjectSettings:
         """Add all fields that are not in 'ignore' to an argument parser."""
         if ignore is None:
             ignore = []
+        settings = parser.add_argument_group(
+            title="project settings",
+            description="information used to create 'README' and 'pyproject.toml'",
+        )
+        urls = parser.add_argument_group(
+            title="project urls",
+            description=(
+                "urls to project pages used for 'pyproject.toml' "
+                "(default: create from github settings)"
+            ),
+        )
         for field in fields(cls):
             if field.name in ignore:
+                continue
+            elif field.name == "license_id":
+                settings.add_argument(
+                    "-l",
+                    "--license",
+                    dest="license_id",
+                    metavar="IDENTIFIER",
+                    help="license to include in the package (default: %(default)s)",
+                    default=None,
+                )
                 continue
             argument = f"--{field.name.replace("_", "-")}"
             help_str = f"{field.name.replace("_", " ")}"
             if field.name in cls.get_url_fields():
-                help_str = f"url to {help_str}  (default: composed from other settings)"
+                help_str = f"url to {help_str}"
+                metavar = "URL"
+                _parser = urls
             else:
                 help_str = f"{help_str} (default: {field.default})"
+                metavar = None
+                _parser = settings
             options = {
                 "type": field.type,
                 "help": help_str,
                 "default": field.default,
+                "metavar": metavar,
             }
-            parser.add_argument(argument, **options)
+            _parser.add_argument(argument, **options)
 
     @classmethod
     def from_argparser(cls, args: argparse.Namespace):

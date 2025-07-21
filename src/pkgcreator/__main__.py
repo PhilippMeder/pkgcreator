@@ -13,6 +13,7 @@ from pkgcreator import (
     get_git_config_value,
 )
 from pkgcreator.logging_config import logger
+from pkgcreator.cli_tools import ConsistentFormatter
 
 
 def get_prompt_bool(message: str, mode: str, auto_decision: bool = False) -> bool:
@@ -65,7 +66,7 @@ def creation_mode(args: argparse.Namespace):
     """Run the creation process."""
     # Setup the project settings
     project_settings = ProjectSettings.from_argparser(args)
-    project_settings.license_id = args.license
+    # project_settings.license_id = args.license
     destination_path = Path(args.destination)
 
     builder = PythonPackage(destination_path, args.name)
@@ -123,15 +124,23 @@ def list_licenses_mode():
 def get_sys_args():
     """Get the settings."""
     parser = argparse.ArgumentParser(
-        description="Create a new Python package structure with optional license."
+        prog="pkgcreator",
+        description="Create a new Python package structure with optional license.",
+        epilog=(
+            "Example: Run (or `-m auto` to prevent creation of Git repository & venv)\n"
+            "  > %(prog)s NAME -l LICENSE -m yes --description TEXT "
+            "--github-username USER <FORMATTER:NOPERIOD>"
+        ),
+        formatter_class=ConsistentFormatter,
     )
 
     parser.add_argument("name", help="name of the Python package to create")
     parser.add_argument(
         "-d",
         "--destination",
+        metavar="PATH",
         default=".",
-        help="destination directory for the package structure",
+        help="destination directory for the package structure (default: %(default)s)",
     )
     parser.add_argument(
         "-m",
@@ -144,29 +153,23 @@ def get_sys_args():
         ),
     )
     parser.add_argument(
-        "-i",
-        "--init-git",
+        "--git",
+        dest="init_git",
         action="store_true",
         help="initialise Git repository and commit created files (requires 'Git')",
     )
     parser.add_argument(
-        "-v",
-        "--init-venv",
+        "--venv",
+        dest="init_venv",
         action="store_true",
         help="initialise a virtual environment and install package in editable mode",
-    )
-    parser.add_argument(
-        "-l",
-        "--license",
-        default=None,
-        help="optional license to include in the package",
     )
     parser.add_argument(
         "--list-licenses",
         action="store_true",
         help="list all available licenses and exit",
     )
-    ProjectSettings.add_to_argparser(parser, ignore=("license_id", "name"))
+    ProjectSettings.add_to_argparser(parser, ignore=("name",))
 
     return parser.parse_args()
 
