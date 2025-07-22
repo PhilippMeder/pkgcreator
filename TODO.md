@@ -3,12 +3,12 @@
 - [x] venv (creation) handling
 - [x] structure
 - [x] settings should use `ghutils` for the github urls
-- [ ] improve `pkgfiles` file content
-- [ ] better pyproject.toml creation
+- [x] improve `pkgfiles` file content
+- [x] better pyproject.toml creation
 - [x] combined cli
 
 After all that
-- [ ] delete old files
+- [x] delete old files
 - [ ] update README
 - [ ] update pyproject.toml
 - [ ] publish
