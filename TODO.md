@@ -9,6 +9,6 @@
 
 After all that
 - [x] delete old files
-- [ ] update README
+- [x] update README
 - [ ] update pyproject.toml
 - [ ] publish
