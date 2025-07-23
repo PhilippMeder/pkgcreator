@@ -96,3 +96,99 @@ class ConsistentFormatter(argparse.HelpFormatter):
                 text += "."
 
         return text
+
+
+def generate_parser_template(feature_name: str, groups: dict, n_tab: int = 4):
+    """
+    Generate a template for an argparse-based feature parser with grouped arguments.
+
+    Parameters
+    ----------
+    feature_name : str
+        The name of the CLI feature, e.g., "examplefeature".
+    groups : dict
+        A dictionary mapping group names to argument dictionaries.
+        Example:
+        {
+            "Group 1": {"-a": "Alpha option", ("-b", "--beta"): "Beta option"},
+            "Group 2": {"--config": "Path to config"}
+        }
+    n_tab : int
+        Number of spaces that represent code indentation (Default: 4).
+
+    Returns
+    -------
+    str
+        The full Python code string for the feature parser.
+    """
+    import textwrap
+
+    # Define indentation
+    tab = f"{'':{n_tab}}"
+
+    # Header
+    func_name = f"get_{feature_name}_parser"
+    description = f"{feature_name.capitalize()} does something useful"
+
+    # Docstring (do not indent the code here since this breaks the final string result)
+    docstring = f'''"""
+Create and configure the argument parser for '{feature_name}'.
+
+This function can either add a subparser to an existing ArgumentParser
+(via `subparsers`) or create a standalone parser when called independently.
+Useful for modular CLI designs.
+
+Parameters
+----------
+subparsers : argparse._SubParsersAction, optional
+    Subparsers object from the main parser to which this parser should be added.
+    If None, a standalone ArgumentParser is created instead.
+prog : str, optional
+    The program name used in standalone mode. Ignored if `subparsers` is provided.
+formatter_class : type, optional
+    The formatter class to be used for argument help formatting. Defaults to
+    argparse.ArgumentDefaultsHelpFormatter.
+
+Returns
+-------
+argparse.ArgumentParser
+    The configured argument parser (necessary esp. for standalone mode).
+"""'''
+
+    # Body
+    body_lines = [
+        f"def {func_name}(",
+        f"{tab}subparsers: argparse._SubParsersAction = None,",
+        f"{tab}prog: str = None,",
+        f"{tab}formatter_class: type = None,",
+        f") -> argparse.ArgumentParser:",
+        textwrap.indent(docstring, tab),
+        f"{tab}parser_options = {"{"}",
+        f'{tab*2}"description": "{description}",',
+        f'{tab*2}"epilog": "Some epilog",',
+        f'{tab*2}"formatter_class": formatter_class or '
+        "argparse.ArgumentDefaultsHelpFormatter,",
+        f"{tab}{"}"}",
+        f"{tab}if subparsers:",
+        f"{tab*2}parser = subparsers.add_parser(",
+        f'{tab*3}"{feature_name}", help=parser_options["description"], **parser_options',
+        f"{tab*2})",
+        f"{tab}else:",
+        f"{tab*2}parser = argparse.ArgumentParser(prog=prog, **parser_options)",
+        "",
+        f"{tab}# Add argument groups",
+    ]
+
+    for group_name, args in groups.items():
+        body_lines.append(f'{tab}group = parser.add_argument_group("{group_name}")')
+        for arg, help_text in args.items():
+            if isinstance(arg, str):
+                arg = f'"{arg}"'
+            else:
+                arg = ", ".join([f'"{this_arg}"' for this_arg in arg])
+            body_lines.append(f'{tab}group.add_argument({arg}, help="{help_text}")')
+        body_lines.append("")
+
+    body_lines.append(f"{tab}return parser")
+
+    return "\n".join(body_lines)
