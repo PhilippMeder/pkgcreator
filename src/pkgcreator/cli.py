@@ -252,6 +252,12 @@ def get_github_download_parser(
         action="store_true",
         help="do not download folders recursively",
     )
+    parser.add_argument(
+        "--list",
+        dest="list_content",
+        action="store_true",
+        help="list content of repository (or subfolder) and exit",
+    )
 
     return parser
 
@@ -454,6 +460,17 @@ def github_download_mode(args: argparse.Namespace):
     repository = GithubRepository(
         owner=args.owner, repository=args.repository, branch=args.branch
     )
+
+    if args.list_content:
+        logger.info(f"Getting content (this may take some time)...")
+        content_str = repository.get_contents_str(
+            subfolder=args.subfolder,
+            branch=args.branch,
+            recursively=not args.no_recursive,
+        )
+        logger.info(f"Found content:\n{content_str}")
+        return
+
     if args.destination is None:
         destination = f"downloaded_{args.repository}"
     else:
@@ -463,6 +480,7 @@ def github_download_mode(args: argparse.Namespace):
         repository.download(
             destination=destination,
             subfolder=args.subfolder,
+            branch=args.branch,
             recursively=not args.no_recursive,
         )
     except ImportError as err:

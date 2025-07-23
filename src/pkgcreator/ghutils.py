@@ -122,6 +122,42 @@ class GithubRepository:
 
         return self._finalize_url(url, add=add, branch=branch)
 
+    def contents(
+        self, subfolder: str = None, branch: str = None, ensure_list: bool = True
+    ) -> list[dict]:
+        """
+        Get contents of the GitHub repository (or subfolder) via the API.
+
+        Parameters
+        ----------
+        subfolder : str, optional
+            Repository subfolder to inspect. If None, the root is used.
+        branch : str, optional
+            Git branch to target. If None, defaults to self.branch.
+        ensure_list : bool, optional
+            Whether to ensure a list is returned, even for one child (default: True).
+
+        Raises
+        ------
+        ModuleNotFoundError
+            If the `requests` library is not installed.
+        HTTPError
+            If a request to the GitHub API or file URL fails.
+        """
+        import requests  # Soft dependency (violates PEP 8 on purpose)
+
+        # Get contents json from github api
+        url = self.get_api_url(name="contents", add=subfolder, branch=branch)
+        response = requests.get(url)
+        response.raise_for_status()
+        contents = response.json()
+
+        # Make sure contents is a list (esp. when there is only one item)
+        if not isinstance(contents, list) and ensure_list:
+            contents = [contents]
+
+        return contents
+
     def download(
         self,
         destination: str | Path,
@@ -130,7 +166,7 @@ class GithubRepository:
         recursively: bool = True,
     ):
         """
-        Download contents of a GitHub repository (or subfolder) via the API.
+        Download contents of the GitHub repository (or subfolder) via the API.
 
         Parameters
         ----------
@@ -153,18 +189,11 @@ class GithubRepository:
         import requests  # Soft dependency (violates PEP 8 on purpose)
 
         # Get contents json from github api
-        url = self.get_api_url(name="contents", add=subfolder, branch=branch)
-        response = requests.get(url)
-        response.raise_for_status()
-        contents = response.json()
+        contents = self.contents(subfolder=subfolder, branch=branch)
 
         # Make destination
         destination = Path(destination)
         destination.mkdir(parents=True, exist_ok=True)
-
-        # Make sure contents is a list (esp. when there is only one item)
-        if not isinstance(contents, list):
-            contents = [contents]
 
         # Download (recursively if wanted)
         for item in contents:
@@ -185,6 +214,74 @@ class GithubRepository:
                     subfolder=new_subfolder,
                     recursively=recursively,
                 )
+
+    def get_contents_str(
+        self,
+        subfolder: str = None,
+        branch: str = None,
+        recursively: bool = True,
+        _level: int = 0,
+    ) -> list[dict]:
+        """
+        Get a formatted string of the contents of the repository (or subfolder).
+
+        Parameters
+        ----------
+        subfolder : str, optional
+            Repository subfolder to inspect. If None, the root is used.
+        branch : str, optional
+            Git branch to target. If None, defaults to self.branch.
+        recursively : bool, optional
+            Whether to get the content recursively (default: True).
+
+        Raises
+        ------
+        ModuleNotFoundError
+            If the `requests` library is not installed.
+        HTTPError
+            If a request to the GitHub API or file URL fails.
+        """
+
+        def format_size(size: int, n_max: int = 4):
+            """Format a file size value in kB."""
+            units = {0: " B", 1: "kB", 2: "MB", 3: "GB", 4: "TB", 5: "PB"}
+            diff = 1000
+            idx = 0
+            while n_max < len(f"{size:.2f}"):
+                idx += 1
+                size /= diff
+
+            unit = units[idx] if idx in units else "??"
+
+            return f"{size:>4.2f} {unit}"
+
+        n_tab = 4
+        tab = f"{'':{n_tab}}"
+        size_tab = f"{'':{n_tab + 3}}"
+        # Get contents json from github api
+        contents = self.contents(subfolder=subfolder, branch=branch)
+
+        # Get content
+        lines = [f"{size_tab}{tab * _level}/{subfolder}"] if subfolder else []
+        for item in contents:
+            name = item["name"]
+            size = item["size"]
+            if item["type"] == "file":
+                lines.append(
+                    f"{format_size(size, n_max=n_tab)}{tab * (_level + 1)}{name}"
+                )
+            elif item["type"] == "dir" and recursively:
+                new_subfolder = f"{subfolder}/{name}" if subfolder else name
+                lines.append(
+                    self.get_contents_str(
+                        subfolder=new_subfolder,
+                        branch=branch,
+                        recursively=recursively,
+                        _level=_level + 1,
+                    )
+                )
+
+        return "\n".join(lines)
 
     def _finalize_url(self, url: str, add: str = None, branch: str = None) -> str:
         """
