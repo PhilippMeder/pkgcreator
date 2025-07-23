@@ -2,7 +2,7 @@ import argparse
 import subprocess
 from pathlib import Path
 
-from pkgcreator.logging_config import logger, logged_subprocess_run
+from pkgcreator.logging_tools import logger, logged_subprocess_run
 
 
 class GitNotAvailableError(OSError):

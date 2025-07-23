@@ -4,7 +4,7 @@ from sys import version_info
 
 from pkgcreator import ProjectSettings
 from pkgcreator.filetypes import Readme, Toml
-from pkgcreator.logging_config import logger
+from pkgcreator.logging_tools import logger
 
 # There is a soft dependency on "requests" for get_available_licenses()/get_license()
 

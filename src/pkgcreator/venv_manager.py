@@ -4,7 +4,7 @@ import venv
 from pathlib import Path
 from sys import version_info
 
-from pkgcreator.logging_config import logger, logged_subprocess_run
+from pkgcreator.logging_tools import logger, logged_subprocess_run
 
 
 class ConcreteEnvBuilder(venv.EnvBuilder):

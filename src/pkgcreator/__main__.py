@@ -12,7 +12,7 @@ from pkgcreator import (
     get_available_licenses,
     get_git_config_value,
 )
-from pkgcreator.logging_config import logger
+from pkgcreator.logging_tools import logger
 from pkgcreator.cli_tools import ConsistentFormatter
 
 

@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from pkgcreator.logging_config import logger
+from pkgcreator.logging_tools import logger
 
 # There is a soft dependency on "requests" for GithubRepository().download()
 
