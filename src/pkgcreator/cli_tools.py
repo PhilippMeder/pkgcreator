@@ -192,3 +192,17 @@ argparse.ArgumentParser
     body_lines.append(f"{tab}return parser")
 
     return "\n".join(body_lines)
+
+
+def get_prompt_bool(message: str, mode: str, auto_decision: bool = False) -> bool:
+    """Return True/False for a prompt according to mode or user input."""
+    match mode:
+        case "yes":
+            return True
+        case "no":
+            return False
+        case "auto":
+            return auto_decision
+        case "ask" | _:
+            user_input = input(f"{message} (Y/n): ")
+            return user_input == "Y"
