@@ -162,6 +162,10 @@ class GithubRepository:
         destination = Path(destination)
         destination.mkdir(parents=True, exist_ok=True)
 
+        # Make sure contents is a list (esp. when there is only one item)
+        if not isinstance(contents, list):
+            contents = [contents]
+
         # Download (recursively if wanted)
         for item in contents:
             name = item["name"]
