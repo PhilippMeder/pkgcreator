@@ -6,6 +6,7 @@
 - [x] improve `pkgfiles` file content
 - [x] better pyproject.toml creation
 - [x] combined cli
+- [x] add subparsers/commands and reduce to one callable script (e.g. like `git [commit | add | init]`)
 
 After all that
 - [x] delete old files
