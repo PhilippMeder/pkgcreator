@@ -7,6 +7,18 @@ from sys import version_info
 from pkgcreator.logging_tools import logger, logged_subprocess_run
 
 
+class VirtualEnvironmentNotFoundError(FileNotFoundError):
+    """Exception raised when virtual environment was not found."""
+
+    pass
+
+
+class InconsistentStateError(Exception):
+    """Exception raised when a logical inconsistency occurs."""
+
+    pass
+
+
 class ConcreteEnvBuilder(venv.EnvBuilder):
     """
     Custom EnvBuilder that enforces pip and calls a post-creation callback.
@@ -80,13 +92,20 @@ class VirtualEnvironment:
 
         Raises
         ------
-        FileNotFoundError
+        VirtualEnvironmentNotFoundError(FileNotFoundError)
             If no Python executable was found in the venv directory.
         """
         if self._created_venv_exe is not None:
             return self._created_venv_exe
         elif self._venv_exe is not None:
             return self._venv_exe
+
+        if not self.venv_dir.exists():
+            msg = (
+                f"No python executable found in '{self.venv_dir}' since this directory "
+                "does not exist!"
+            )
+            raise VirtualEnvironmentNotFoundError(msg)
 
         possible_paths = (
             self.venv_dir / "bin" / "python.exe",
@@ -99,8 +118,8 @@ class VirtualEnvironment:
                 self._venv_exe = path
                 return path
         else:
-            msg = f"No python executable found in {self.venv_dir}!"
-            raise FileNotFoundError(msg)
+            msg = f"No python executable found in '{self.venv_dir}'!"
+            raise VirtualEnvironmentNotFoundError(msg)
 
     def create(self) -> None:
         """
@@ -110,15 +129,61 @@ class VirtualEnvironment:
         ------
         FileExistsError
             If the venv directory already exists.
+        InconsistentStateError
+            If only one of the expected venv directory/file pair exists.
         """
-        if self.venv_dir.exists():
-            msg = f"{self.venv_dir} already exists!"
+        if self.exists():
+            msg = f"Virtual environment in '{self.venv_dir}' already exists!"
             raise FileExistsError(msg)
 
-        logger.info(f"Creating venv in {self.venv_dir} (this may take some time)...")
+        logger.info(f"Creating venv in '{self.venv_dir}' (this may take some time)...")
         builder = ConcreteEnvBuilder(creation_callback=self._process_creation_context)
         builder.create(self.venv_dir)
-        logger.info(f"Finished creating venv in {self.venv_dir}.")
+        logger.info(f"Finished creating venv in '{self.venv_dir}'.")
+
+    def exists(self, ensure_logic: bool = True) -> bool:
+        """
+        Check whether the virtual environment already exists.
+
+        Parameters
+        ----------
+        ensure_logic : bool, optional
+            Whether to raise an error if only one of the expected directory/file pair
+            exists (default: True).
+
+        Returns
+        -------
+        bool
+            Whether the virtual environment exists or not.
+
+        Raises
+        ------
+        InconsistentStateError
+            If only one of the expected directory/file pair exists and 'ensure_logic'.
+        """
+        dir_exists = self.venv_dir.exists()
+        try:
+            _python = self.python
+            python_exists = True
+        except FileNotFoundError:
+            python_exists = False
+
+        if dir_exists and python_exists:
+            return True
+        elif not dir_exists and not python_exists:
+            return False
+        elif ensure_logic:
+            true_str = "exists"
+            false_str = "does not exist"
+            msg = (
+                f"Found inconsistency while checking for the existence of a "
+                f"virtual environment in '{self.venv_dir}': "
+                f"the directory {true_str if dir_exists else false_str}, but "
+                f"the Python interpreter {true_str if python_exists else false_str}!"
+            )
+            raise InconsistentStateError(msg)
+        else:
+            return python_exists
 
     def install_packages(
         self, packages: list[str] = None, editable_packages: list[str] = None, **kwargs

@@ -302,18 +302,6 @@ def get_venv_parser(
         parser = argparse.ArgumentParser(prog=prog, **parser_options)
 
     parser.add_argument(
-        "-c", "--create", action="store_true", help="create the virtual environment."
-    )
-    parser.add_argument(
-        "-i", "--install", nargs="+", help="list of packages to install (via pip)."
-    )
-    parser.add_argument(
-        "-e",
-        "--editable",
-        nargs="+",
-        help="list of local package paths to install in editable mode (-e).",
-    )
-    parser.add_argument(
         "-d",
         "--destination",
         dest="path",
@@ -323,6 +311,23 @@ def get_venv_parser(
             "parent directory where the venv folder will be created "
             "(default: current working directory)"
         ),
+    )
+    parser.add_argument(
+        "-c", "--create", action="store_true", help="create the virtual environment."
+    )
+    parser.add_argument(
+        "-i",
+        "--install",
+        metavar="PACKAGE",
+        nargs="+",
+        help="list of packages to install (via pip).",
+    )
+    parser.add_argument(
+        "-e",
+        "--editable",
+        metavar="PACKAGE",
+        nargs="+",
+        help="list of packages/local package paths to install in editable mode (-e).",
     )
     parser.add_argument(
         "--name",
@@ -502,6 +507,16 @@ def venv_mode(args: argparse.Namespace):
             warning_msg = f"Could not create virtual environment: {err}"
             logger.error(warning_msg, exc_info=True)
 
+    # Check for existence of the virtual environment
+    try:
+        if this_venv.exists():
+            if not args.create:  # No message if it was just created
+                logger.info(f"Found a virtual environment in '{this_venv.venv_dir}'...")
+        else:
+            logger.warning(f"Found no virtual environment '{this_venv.venv_dir}'!")
+    except Exception as err:
+        logger.error(err, exc_info=True)
+
     if args.install or args.editable:
         try:
             this_venv.install_packages(
@@ -509,8 +524,7 @@ def venv_mode(args: argparse.Namespace):
                 editable_packages=args.editable,
             )
         except FileNotFoundError as err:
-            warning_msg = f"Error: {err}\nIs the virtual environment already created?"
-            logger.error(warning_msg, exc_info=True)
+            logger.error(err, exc_info=True)
 
 
 def main():
