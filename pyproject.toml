@@ -1,25 +1,35 @@
 [project]
 name = "pkgcreator"
-version = "0.1"
-authors = [{ name="Philipp Meder", email="148459685+PhilippMeder@users.noreply.github.com"  },]
+version = "0.1.0"
+license = {file = "LICENSE"}
 description = "Create python package structure, necessary files with content, git repository and venv."
 readme = "README.md"
-license = { file = "LICENSE" }
+authors = [{name = "Philipp Meder", email = "148459685+PhilippMeder@users.noreply.github.com"}]
+maintainers = [{name = "Philipp Meder", email = "148459685+PhilippMeder@users.noreply.github.com"}]
 requires-python = ">=3.13"
 dependencies = []
-classifiers=[
-    "Programming Language :: Python :: 3",
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: System :: Archiving :: Packaging",
+    "Topic :: System :: Software Distribution",
 ]
 
 [project.urls]
-Changelog = "https://github.com/PhilippMeder/pkgcreator/commits"
-Documentation = "https://github.com/PhilippMeder/pkgcreator/README.md"
-Download = "https://github.com/PhilippMeder/pkgcreator"
-Homepage = "https://github.com/PhilippMeder/pkgcreator"
-Issues = "https://github.com/PhilippMeder/pkgcreator/issues"
-Releasenotes = "https://github.com/PhilippMeder/pkgcreator/commits"
-Source = "https://github.com/PhilippMeder/pkgcreator.git"
+changelog = "https://github.com/PhilippMeder/pkgcreator/commits"
+documentation = "https://github.com/PhilippMeder/pkgcreator/README.md"
+download = "https://github.com/PhilippMeder/pkgcreator"
+homepage = "https://github.com/PhilippMeder/pkgcreator"
+issues = "https://github.com/PhilippMeder/pkgcreator/issues"
+releasenotes = "https://github.com/PhilippMeder/pkgcreator/commits"
+source = "https://github.com/PhilippMeder/pkgcreator.git"
 
 [project.scripts]
 pkgcreator = "pkgcreator.__main__:main"
+
+[project.optional-dependencies]
+full = ["requests"]
