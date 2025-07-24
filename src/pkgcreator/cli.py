@@ -118,7 +118,7 @@ def get_creator_parser(
         action="store_true",
         help="list all available licenses and exit",
     )
-    ProjectSettings.add_to_argparser(parser, ignore=("name",))
+    ProjectSettings.add_to_argparser(parser, ignore=("name", "make_script"))
 
     return parser
 

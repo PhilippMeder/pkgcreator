@@ -72,7 +72,7 @@ class FileContent(dict):
 
         content = {
             "name": project.name,
-            "version": "0.1",
+            "version": "0.1.0",
             "license": {"file": "LICENSE"},
             "description": project.description,
             "readme": "README.md",
@@ -81,11 +81,8 @@ class FileContent(dict):
                 {"name": project.author_name, "email": project.author_mail}
             ],
             "requires-python": f">={min_python}",
-            "dependencies": [],
-            "classifiers": [
-                "Programming Language :: Python :: 3",
-                "Operating System :: OS Independent",
-            ],
+            "dependencies": project.dependencies,
+            "classifiers": project.classifiers,
         }
 
         toml = Toml()
@@ -96,6 +93,9 @@ class FileContent(dict):
         if project.make_script:
             toml.add_heading("project.scripts")
             toml.add_variable(project.name, f"{project.name}.__main__:main")
+        if project.optional_dependencies:
+            toml.add_heading("project.optional-dependencies")
+            toml.add_list("full", project.optional_dependencies)
 
         return toml.content
 

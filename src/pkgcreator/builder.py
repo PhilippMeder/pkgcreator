@@ -1,5 +1,5 @@
 import argparse
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, fields, field, MISSING
 from pathlib import Path
 
 from pkgcreator import GithubRepository
@@ -11,9 +11,21 @@ class PackageExistsError(FileExistsError):
     pass
 
 
+def default_classifiers() -> list[str]:
+    """Return list of classifiers used as defaults."""
+    return [
+        "Programming Language :: Python :: 3",
+        "Operating System :: OS Independent",
+    ]
+
+
 @dataclass(kw_only=True)
 class ProjectSettings:
 
+    make_script: bool = False
+    dependencies: list[str] = field(default_factory=list)
+    optional_dependencies: list[str] = field(default_factory=list)
+    classifiers: list[str] = field(default_factory=default_classifiers)
     license_id: str = None
     name: str = "PACKAGENAME"
     description: str = "PACKAGEDESCRIPTION"
@@ -45,10 +57,10 @@ class ProjectSettings:
 
     def is_default(self, name: str) -> bool:
         """Check if the value of field 'name' equals to the default value."""
-        for field in fields(self):
-            if field.name != name:
+        for _field in fields(self):
+            if _field.name != name:
                 continue
-            return getattr(self, name) == field.default
+            return getattr(self, name) == _field.default
         else:
             raise AttributeError(f"Field '{name}' unkown!")
 
@@ -76,6 +88,15 @@ class ProjectSettings:
             "source",
         )
 
+    @staticmethod
+    def get_advanced_fields():
+        """Return a tuple of field names that represent an advanced setting."""
+        return (
+            "classifiers",
+            "dependencies",
+            "optional_dependencies",
+        )
+
     @property
     def urls(self) -> dict[str]:
         """Return '{name: url}' dictionary for project urls."""
@@ -88,9 +109,9 @@ class ProjectSettings:
     def nice_str(self) -> str:
         """Return a table-like string representation of the fields."""
         values = {
-            field.name: value
-            for field in fields(self)
-            if (value := getattr(self, field.name))
+            _field.name: value
+            for _field in fields(self)
+            if (value := getattr(self, _field.name))
         }
         n_max = max(map(len, values.keys()))
 
@@ -103,6 +124,7 @@ class ProjectSettings:
         """Add all fields that are not in 'ignore' to an argument parser."""
         if ignore is None:
             ignore = []
+        # Setup sections
         settings = parser.add_argument_group(
             title="project settings",
             description="information used to create 'README' and 'pyproject.toml'",
@@ -114,10 +136,22 @@ class ProjectSettings:
                 "(default: create from github settings)"
             ),
         )
-        for field in fields(cls):
-            if field.name in ignore:
+        url_fields = cls.get_url_fields()
+        advanced = parser.add_argument_group(
+            title="advanced project settings",
+            description=(
+                "further information passed to 'pyproject.toml' "
+                "(probably evolve during package development)"
+            ),
+        )
+        advanced_fields = cls.get_advanced_fields()
+
+        # Add arguments to the correct sections
+        for _field in fields(cls):
+            # Ignoring or special treatment
+            if _field.name in ignore:
                 continue
-            elif field.name == "license_id":
+            elif _field.name == "license_id":
                 settings.add_argument(
                     "-l",
                     "--license",
@@ -127,32 +161,45 @@ class ProjectSettings:
                     default=None,
                 )
                 continue
-            argument = f"--{field.name.replace("_", "-")}"
-            help_str = f"{field.name.replace("_", " ")}"
-            if field.name in cls.get_url_fields():
-                help_str = f"url to {help_str}"
-                metavar = "URL"
+            # Default treatment according to settings above
+            argument = f"--{_field.name.replace("_", "-")}"
+            help_str = f"{_field.name.replace("_", " ")}"
+            options = {"type": _field.type, "default": cls.get_field_default(_field)}
+            if _field.name in url_fields:
+                options["help"] = f"url to {help_str}"
+                options["metavar"] = "URL"
                 _parser = urls
+            elif _field.name in advanced_fields:
+                options["metavar"] = "STR"
+                options["nargs"] = "+"
+                options["type"] = str  # argparse needs the type of the list content!
+                _parser = advanced
             else:
-                help_str = f"{help_str} (default: {field.default})"
-                metavar = None
+                options["help"] = f"{help_str} (default: {options["default"]})"
                 _parser = settings
-            options = {
-                "type": field.type,
-                "help": help_str,
-                "default": field.default,
-                "metavar": metavar,
-            }
+
             _parser.add_argument(argument, **options)
 
     @classmethod
     def from_argparser(cls, args: argparse.Namespace):
         """Return instance of this class with options set to the values of 'args'."""
         args_dict = vars(args)
-        names = [field.name for field in fields(cls)]
+        names = [_field.name for _field in fields(cls)]
         options = {name: value for name, value in args_dict.items() if name in names}
 
         return cls(**options)
+
+    @classmethod
+    def get_field_default(cls, _field, raise_err: bool = True):
+        """Return the default value of a field while taking care of default_factory."""
+        if _field.default is not MISSING:
+            return _field.default
+        elif _field.default_factory is not MISSING:
+            return _field.default_factory()
+        else:
+            if raise_err:
+                raise ValueError(f"Default for field '{_field.name}' is missing!")
+            return None
 
 
 class PythonPackage:
