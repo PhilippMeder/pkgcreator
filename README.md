@@ -10,34 +10,12 @@ Developed and maintained by [Philipp Meder](https://github.com/PhilippMeder).
 Quick overview:
 
 1. [License](#license)
-2. [Usage](#usage)
 3. [Features](#features) **(most interesting part)**
 4. [Requirements and Dependencies](#requirements-and-dependencies)
 
 ## License
 
 Distributed under the [BSD 3-Clause License](./LICENSE).
-
-## Usage
-
-You may directly call one of the two following lines:
-
-```bash
-pkgcreator [OPTIONS]
-python -m pkgcreator [OPTIONS]
-```
-
-For a list of available options, run:
-
-```bash
-pkgcreator --help
-```
-
-For a list of available licenses to choose from, run:
-
-```bash
-pkgcreator --list-licenses
-```
 
 ## Features
 
@@ -52,13 +30,26 @@ Following features are covered here, with focus on the main feature **[Package S
     1. [Python version](#python-version)
     2. [Bash version](#bash-version)
 
+To use the core features, you may directly call one of the two following lines:
+
+```bash
+pkgcreator [OPTIONS]
+python -m pkgcreator [OPTIONS]
+```
+
+For a list of available options, see the next sections or run:
+
+```bash
+pkgcreator --help
+```
+
 ### Package Structure Creator
 
 Create a typical file structure for a python package with the necessary files and their content.
 
 #### Creating the package structure
 
-Running `pkgcreator <NAME>` will create the following package structure as offically recommended:
+Running `pkgcreator create <NAME>` will create the following package structure as offically recommended:
 
 - `NAME`
   - `src/NAME`
@@ -68,6 +59,12 @@ Running `pkgcreator <NAME>` will create the following package structure as offic
   - `LICENSE` (with content if the `-l, --license>` option is used)
   - `pyproject.toml` (with content according to the options used, see `--help`)
   - `README.md` (with content according to the options used, see `--help`)
+
+For a list of available options, read the next sections or run:
+
+```bash
+pkgcreator create --help
+```
 
 #### Configuring the creation process and adding Git/venv
 
@@ -142,13 +139,29 @@ If not set, each of them will link to a subpage of the github repository defined
 - `--releasenotes`
 - `--source`
 
+If some dependencies, optional dependencies or classifiers (for PyPI) are already known, they can be set with the following commands:
+
+- `--dependencies package1 package2 ...`
+- `--optional-dependencies package1 package2 ...` (available as a `[full]` option during package installation)
+- `--classifiers classifier1 classifier2 ...` (for a full list see [PyPI classifier](https://pypi.org/classifiers/))
+
+### Accessing Git with Python
+
+This feature is provided for completeness since it is used as a handy tool during the package structure creation process.
+You may run
+
+```bash
+pkgcreator git --help
+```
+
+to list the available options.
+However, **running Git directly** is usually more flexible and preferred.
+
 ### GitHub Downloader
 
 Download a specific folder (or the entire contents) from a public GitHub repository using the GitHub API.
 
 #### Python version
-
-Located in: [`ghutils.py`](./src/ghutils.py)
 
 **Features:**
 
@@ -158,18 +171,21 @@ Located in: [`ghutils.py`](./src/ghutils.py)
 
 **Usage:**
 
-```bash
-python ghutils.py ExampleOwner example_repo \
-  --branch main \
-  --subfolder src/utils \
-  --destination ./downloaded_code
-```
-
-To download the entire repository contents (default branch `main`):
+To download the repository contents (default branch `main`), run:
 
 ```bash
-python ghutils.py ExampleOwner example_repo
+pkgcreator github-download <OWNER> <REPOSITORY> [OPTIONS]
 ```
+
+Available options are (run `pkgcreator github-download --help` for a full list):
+
+- `-b, --branch` Selects the branch name (default: *main*).
+- `-s, --subfolder` If not provided, download the full repository. If set to a subdirectory of the repository, download this subdirectory. If set to a single file, only download this file.
+- `-d, --destination` Local directory where the files should be downloaded to (default: *./downloaded_<REPOSITORY>*).
+- `-n, --no-recursive` Do not download folders recursively.
+- `--list` List the content of the repository (or the given subfolder) and exit.
+
+**Note:** The GitHub API limits the number of requests per time period. For more information see the [Rate limits for the REST API](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api).
 
 #### Bash version
 
@@ -195,6 +211,16 @@ Arguments:
 ```
 
 If no folder is specified, the full repository is checked out.
+
+### Creating and Managing Virtual Environments
+
+The command
+
+```bash
+pkgcreator venv [OPTIONS]
+```
+
+can create a virtual environment and install packages in this environment.
 
 ## Requirements and Dependencies
 

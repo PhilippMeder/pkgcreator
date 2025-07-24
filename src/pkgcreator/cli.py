@@ -51,7 +51,10 @@ def get_creator_parser(
         The configured argument parser (necessary esp. for standalone mode).
     """
     parser_options = {
-        "description": "Create a new Python package structure with optional license.",
+        "description": (
+            "Creates a Python package structure with optional license, "
+            "Git repository (requires Git), and virtual environment."
+        ),
         "epilog": (
             "Example: Run (or `-m auto` to prevent creation of Git repository & venv)\n"
             "  > %(prog)s NAME -l LICENSE -m yes --description TEXT "
@@ -152,7 +155,11 @@ def get_git_parser(
         The configured argument parser (necessary esp. for standalone mode).
     """
     parser_options = {
-        "description": "Initialise and optionally commit to a Git repository.",
+        "description": (
+            "Initialises and optionally commits to a Git repository. "
+            "Provided for completeness, but using Git directly is usually more "
+            "flexible and preferred."
+        ),
         "formatter_class": formatter_class or argparse.ArgumentDefaultsHelpFormatter,
     }
     if subparsers:
@@ -220,8 +227,8 @@ def get_github_download_parser(
     """
     parser_options = {
         "description": (
-            "Download a folder (or full content) from a github repository without "
-            "cloning it."
+            "Downloads files or folders from a GitHub repository without performing a "
+            "full Git clone."
         ),
         "formatter_class": formatter_class or argparse.ArgumentDefaultsHelpFormatter,
     }
@@ -244,7 +251,7 @@ def get_github_download_parser(
         "-d",
         "--destination",
         default=None,
-        help="local destination directory (default: ./downloaded_<repository>)",
+        help="local destination directory (default: ./downloaded_<REPOSITORY>)",
     )
     parser.add_argument(
         "-n",
@@ -291,7 +298,10 @@ def get_venv_parser(
         The configured argument parser (necessary esp. for standalone mode).
     """
     parser_options = {
-        "description": "Create and manage a Python virtual environment.",
+        "description": (
+            "Manages a virtual environment for the project, including creation and "
+            "package installation."
+        ),
         "formatter_class": formatter_class or argparse.ArgumentDefaultsHelpFormatter,
     }
     if subparsers:
