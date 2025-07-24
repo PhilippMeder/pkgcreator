@@ -524,9 +524,13 @@ def main():
     formatter_class = ConsistentFormatter
     parser = argparse.ArgumentParser(
         prog="pkgcreator",
-        description="My CLI tool",  # , formatter_class=formatter_class
+        description=(
+            "create a python package structure, initalise a Git repository or a "
+            "virtual environment (venv), or download files from GitHub"
+        ),
+        formatter_class=formatter_class,
     )
-    subparsers = parser.add_subparsers(dest="feature", required=True)
+    subparsers = parser.add_subparsers(dest="feature")
 
     feature_parsers = (
         get_creator_parser,
@@ -557,10 +561,8 @@ def main():
         case "venv":
             venv_mode(args)
         case _:
-            try:
-                raise ValueError(f"Command '{args.feature}' not recognised!")
-            except ValueError as err:
-                logger.error(err, exc_info=True)
+            parser.print_help()
+            parser.exit(message="Run again and specify a supported command.")
 
 
 if __name__ == "__main__":
