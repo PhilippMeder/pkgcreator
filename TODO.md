@@ -10,12 +10,12 @@
 
 After all that
 - [x] delete old files
-- [ ] update README
-    - [ ] venv
-    - [ ] logging tools
-    - [ ] cli tools
-    - [ ] toc
-    - [ ] check
-    - [ ] logo?
+- [x] update README
+    - [x] venv
+    - [x] logging tools
+    - [x] cli tools
+    - [x] toc
+    - [x] check
+    - [x] logo?
 - [ ] update pyproject.toml
 - [ ] publish

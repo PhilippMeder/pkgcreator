@@ -1,17 +1,40 @@
-# pkgcreator
+<h1 align="center">
+<img src="./docs/figs/pkgcreator_logo.svg" width="300">
+</h1>
 
-**Create python package structure, necessary files with content, git repository and venv.**
+`pkgcreator` is a Python CLI tool that helps you quickly set up a new Python package with a recommended folder structure, a virtual environment, license file, Git repository, and pre-filled configuration files like `pyproject.toml` and `README.md`.
+
+It supports interactive prompts, smart defaults (e.g. from your Git config), and includes additional utilities like a GitHub folder downloader, CLI/formatter helpers, and virtual environment management.
+
+Whether you're preparing a new project or just want a clean setup for your next internal tool — `pkgcreator` automates the boilerplate and saves you time.
 
 Developed and maintained by [Philipp Meder](https://github.com/PhilippMeder).
 
-- **Source code**: https://github.com/PhilippMeder/REPOSITORYNAME.git
-- **Report bugs**: https://github.com/PhilippMeder/REPOSITORYNAME/issues
+- **Source code**: https://github.com/PhilippMeder/pkgcreator.git
+- **Report bugs**: https://github.com/PhilippMeder/pkgcreator/issues
 
 Quick overview:
 
-1. [License](#license)
+1. [Quick Start](#quick-start)
+2. [License](#license)
 3. [Features](#features) **(most interesting part)**
 4. [Requirements and Dependencies](#requirements-and-dependencies)
+
+## Quick Start
+
+Install this package (replace `pkgcreator` with `pkgcreator[full]` to install all optional dependencies on Python packages):
+
+```bash
+pip install pkgcreator
+```
+
+Create a new package structure, initialise Git, create a virtual environment, and include the *MIT license*:
+
+```bash
+pkgcreator create mypackage --git --venv --license MIT
+```
+
+For a detailed list of available options, see the section [Package Structure Creator](#package-structure-creator).
 
 ## License
 
@@ -26,9 +49,14 @@ Following features are covered here, with focus on the main feature **[Package S
     2. [Configuring the creation process and adding Git/venv](#configuring-the-creation-process-and-adding-gitvenv)
     3. [Configuring project settings](#configuring-project-settings)
     4. [Using preselections and suggestions](#using-preselections-and-suggestions)
-2. [GitHub Downloader](#github-downloader)
+2. [Accessing Git with Python](#accessing-git-with-python)
+3. [GitHub Downloader](#github-downloader)
     1. [Python version](#python-version)
     2. [Bash version](#bash-version)
+4. [Creating and Managing Virtual Environments](#creating-and-managing-virtual-environments)
+5. [Tools](#tools)
+    1. [Logging tools](#logging-tools)
+    2. [CLI tools](#cli-tools)
 
 To use the core features, you may directly call one of the two following lines:
 
@@ -49,7 +77,7 @@ Create a typical file structure for a python package with the necessary files an
 
 #### Creating the package structure
 
-Running `pkgcreator create <NAME>` will create the following package structure as offically recommended:
+Running `pkgcreator create <NAME>` will create the following package structure as officially recommended:
 
 - `NAME`
   - `src/NAME`
@@ -74,7 +102,7 @@ There are several important options you may consider when creating the package s
 
   Using the `-l, --license <LICENSE>` option allows you to add the text of `<LICENSE>` if this is a valid identifier. To list all available identifiers, use `--list-licenses`. This option requires the python package `requests` and will fail if it is not installed.
 
-- Initalising a Git repository with `--git`:
+- Initialising a Git repository with `--git`:
 
   If `Git` is available on your system, using the `--git` option automatically initialises a Git repository and commits all created files.
 
@@ -124,10 +152,10 @@ Available options are (the names are self-explanatory):
 | `--description` |   |
 | `--author-name` | suggests `git config user.name` if not set |
 | `--author-mail` | suggests `git config user.email` if not set |
-| `--github-username` | used for various project urls (if not provided) |
-| `--github-repositoryname` | used for various project urls (if not provided), suggests the package name if not set |
+| `--github-username` | used for various project URLs (if not provided) |
+| `--github-repositoryname` | used for various project URLs (if not provided), suggests the package name if not set |
 
-In addition, a typical package also links to some of its online ressources.
+In addition, a typical package also links to some of its online resources.
 If not set, each of them will link to a subpage of the github repository defined by `--github-username` and `--github-repositoryname`.
 
 - `--changelog`
@@ -221,6 +249,46 @@ pkgcreator venv [OPTIONS]
 ```
 
 can create a virtual environment and install packages in this environment.
+Available options are (run `pkgcreator github-download --help` for a full list):
+
+- `-d, --destination` Directory where the venv folder will be created (default: current working directory).
+- `-c, --create` Create the virtual environment.
+- `-i, --install` List of packages to install (via pip).
+- `-e, --editable` List of packages/local package paths to install in editable mode (-e).
+- `--name` Name of the virtual environment folder (default: .venv).
+- `--version-suffix` Append Python major/minor version to the venv folder name.
+
+### Tools
+
+In addition to the main features, also some useful tools that were written for the functionality of this package are available.
+
+#### Logging tools
+
+- `LoggerFormatter` provides a formatter that is a subclass of the standard library's `logging.Formatter`. The logger messages will be color coded and start with `[Error], [Warning], [Info]` depending on the message type.
+- `logged_subprocess_run` provides a wrapper around `subprocess.run` where the output feed of the process is streamed live to the given logger.
+
+To use these features and understand their parameters, run:
+
+```python
+from pkgcreator.logging_tools import LoggerFormatter, logged_subprocess_run
+
+help(LoggerFormatter)
+help(logged_subprocess_run)
+```
+
+#### CLI tools
+
+- `ConsistentFormatter` provides an `argparse.HelpFormatter` that aims at a consistent appearance. It enforces capitalization and periods where needed.
+- `generate_parser_template` generates a template Python function that consistently creates an `argparse.Argparser` that is either a standalone or a subparser.
+
+To use these features and understand their parameters, run:
+
+```python
+from pkgcreator.cli_tools import ConsistentFormatter, generate_parser_template
+
+help(ConsistentFormatter)
+help(generate_parser_template)
+```
 
 ## Requirements and Dependencies
 
@@ -231,10 +299,16 @@ Following **requirements** must be satisfied:
 Following **optional dependencies** are recommended, but not required:
 
 * `requests` library (for Python GitHub downloader and license selection/download)
-* `Git` (for sparse-checkout Bash script or if you want to initalise a Git repository when creating a Python package)
+* `Git` (for sparse-checkout Bash script or if you want to initialise a Git repository when creating a Python package)
 
-To install Python dependencies you may use:
+To install Python dependencies you may either use
 
 ```bash
 pip install DEPENDENCY
+```
+
+or directly specify that you want to install all optional dependencies when installing this package with:
+
+```bash
+pip install pkgcreator[full]
 ```
