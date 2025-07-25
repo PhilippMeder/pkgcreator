@@ -162,8 +162,8 @@ class ProjectSettings:
                 )
                 continue
             # Default treatment according to settings above
-            argument = f"--{_field.name.replace("_", "-")}"
-            help_str = f"{_field.name.replace("_", " ")}"
+            argument = f'--{_field.name.replace("_", "-")}'
+            help_str = f'{_field.name.replace("_", " ")}'
             options = {"type": _field.type, "default": cls.get_field_default(_field)}
             if _field.name in url_fields:
                 options["help"] = f"url to {help_str}"
@@ -175,7 +175,7 @@ class ProjectSettings:
                 options["type"] = str  # argparse needs the type of the list content!
                 _parser = advanced
             else:
-                options["help"] = f"{help_str} (default: {options["default"]})"
+                options["help"] = f'{help_str} (default: {options["default"]})'
                 _parser = settings
 
             _parser.add_argument(argument, **options)

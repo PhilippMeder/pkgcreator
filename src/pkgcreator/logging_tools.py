@@ -236,7 +236,7 @@ class LoggerFormatter(logging.Formatter):
         message = record.getMessage()
 
         if record.levelno == logging.INFO:
-            title = f"{COLORS.get("SUCCESS", RESET)}[INFO]{RESET} "
+            title = f'{COLORS.get("SUCCESS", RESET)}[INFO]{RESET} '
             description = ""
         elif record.levelno == logging.WARNING:
             title = "[WARNING]"

@@ -6,7 +6,7 @@ description = "Create python package structure, necessary files with content, gi
 readme = "README.md"
 authors = [{name = "Philipp Meder", email = "148459685+PhilippMeder@users.noreply.github.com"}]
 maintainers = [{name = "Philipp Meder", email = "148459685+PhilippMeder@users.noreply.github.com"}]
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = []
 keywords = ["python", "packaging", "project-setup", "cli", "automation"]
 classifiers = [

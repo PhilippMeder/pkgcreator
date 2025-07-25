@@ -37,7 +37,7 @@ class Readme(BaseFileType):
             _start = self.newline
         else:
             _start = ""
-        self._lines.append(f"{_start}{"#"*(level+1)} {text}{self.newline}")
+        self._lines.append(f'{_start}{"#"*(level+1)} {text}{self.newline}')
         if to_toc:
             self._headings.append(text)
 
@@ -114,7 +114,7 @@ class Readme(BaseFileType):
 
     @staticmethod
     def linkname_internal(text: str) -> str:
-        return f"#{text.lower().replace(" ", "-").replace("_", "-")}"
+        return f'#{text.lower().replace(" ", "-").replace("_", "-")}'
 
     @classmethod
     def listitem(cls, text: str, index: int = None, level: int = 0) -> str:

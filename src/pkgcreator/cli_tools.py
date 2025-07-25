@@ -30,7 +30,7 @@ class ConsistentFormatter(argparse.HelpFormatter):
             result = default_metavar
 
         if action.choices is not None:
-            choices = f"={{{",".join(map(str, action.choices))}}}"
+            choices = f'={{{",".join(map(str, action.choices))}}}'
         else:
             choices = ""
 
@@ -168,12 +168,12 @@ argparse.ArgumentParser
         f"{tab}formatter_class: type = None,",
         f") -> argparse.ArgumentParser:",
         textwrap.indent(docstring, tab),
-        f"{tab}parser_options = {"{"}",
+        f'{tab}parser_options = {"{"}',
         f'{tab*2}"description": "{description}",',
         f'{tab*2}"epilog": "Some epilog",',
         f'{tab*2}"formatter_class": formatter_class or '
         "argparse.ArgumentDefaultsHelpFormatter,",
-        f"{tab}{"}"}",
+        f'{tab}{"}"}',
         f"{tab}if subparsers:",
         f"{tab*2}parser = subparsers.add_parser(",
         f'{tab*3}"{feature_name}", help=parser_options["description"], **parser_options',
