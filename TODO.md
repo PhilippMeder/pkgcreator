@@ -17,5 +17,7 @@ After all that
     - [x] toc
     - [x] check
     - [x] logo?
+- [ ] test what python versions work
 - [ ] update pyproject.toml
+    - [ ] maybe `dynamic = ["description"]` to create description dynamically (README)?
 - [ ] publish

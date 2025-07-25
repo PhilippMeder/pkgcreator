@@ -8,6 +8,7 @@ authors = [{name = "Philipp Meder", email = "148459685+PhilippMeder@users.norepl
 maintainers = [{name = "Philipp Meder", email = "148459685+PhilippMeder@users.noreply.github.com"}]
 requires-python = ">=3.13"
 dependencies = []
+keywords = ["python", "packaging", "project-setup", "cli", "automation"]
 classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: BSD License",
@@ -21,7 +22,7 @@ classifiers = [
 
 [project.urls]
 changelog = "https://github.com/PhilippMeder/pkgcreator/commits"
-documentation = "https://github.com/PhilippMeder/pkgcreator/README.md"
+documentation = "https://github.com/PhilippMeder/pkgcreator#readme"
 download = "https://github.com/PhilippMeder/pkgcreator"
 homepage = "https://github.com/PhilippMeder/pkgcreator"
 issues = "https://github.com/PhilippMeder/pkgcreator/issues"
