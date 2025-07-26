@@ -34,3 +34,4 @@ pkgcreator = "pkgcreator.__main__:main"
 
 [project.optional-dependencies]
 full = ["requests"]
+dev = ["pytest"]

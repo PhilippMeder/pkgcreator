@@ -18,6 +18,8 @@ After all that
     - [x] check
     - [x] logo?
 - [ ] test what python versions work
+    - [ ] write tests
+    - [ ] auto-run tests for different Python versions (first tests are promising that 3.10 & 3.11 are working)
 - [ ] update pyproject.toml
     - [ ] maybe `dynamic = ["description"]` to create description dynamically (README)?
 - [ ] publish
