@@ -49,7 +49,7 @@ class ConcreteEnvBuilder(venv.EnvBuilder):
         This method is calls the default implementation if available (Python >= 3.13).
         """
         try:
-            super().create_git_ignore_file(self, context)
+            super().create_git_ignore_file(context)
         except AttributeError:
             filepath = Path(context.env_dir) / ".gitignore"
             with open(filepath, "w", encoding="utf-8") as file:
