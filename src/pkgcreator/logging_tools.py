@@ -285,7 +285,7 @@ def get_logger() -> logging.Logger:
     logger = logging.getLogger("pkgcreator")
     logger.setLevel(logging.INFO)
 
-    # Add terminal outpur
+    # Add terminal output
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
     formatter = LoggerFormatter(
