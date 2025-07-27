@@ -294,7 +294,7 @@ help(generate_parser_template)
 
 Following **requirements** must be satisfied:
 
-* `Python 3.13+` (may work with lower versions, but not tested)
+* `Python 3.10+` (developed with `Python 3.13`, tested with `Python 3.10+`, lower version are not working due to the use of `match ... case` and `Union`)
 
 Following **optional dependencies** are recommended, but not required:
 

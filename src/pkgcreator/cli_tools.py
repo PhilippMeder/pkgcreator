@@ -21,10 +21,8 @@ class ConsistentFormatter(argparse.HelpFormatter):
         # Handle subparser and subcommands (do not change their appearence)
         if isinstance(
             action,
-            (
-                argparse._SubParsersAction,
-                argparse._SubParsersAction._ChoicesPseudoAction,
-            ),
+            argparse._SubParsersAction
+            | argparse._SubParsersAction._ChoicesPseudoAction,
         ):
             return lambda tuple_size: (action.metavar or default_metavar,) * tuple_size
         # Different than usual argparse formatters: choices are always next to metavar
