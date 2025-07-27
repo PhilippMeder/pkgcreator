@@ -19,15 +19,16 @@ class ConsistentFormatter(argparse.HelpFormatter):
         Contrary to the usual argparse formatters, present choices will always be shown!
         """
         # Handle subparser and subcommands (do not change their appearence)
-        if isinstance(action, argparse._SubParsersAction) or isinstance(
-            action, argparse._SubParsersAction._ChoicesPseudoAction
+        if isinstance(
+            action,
+            (
+                argparse._SubParsersAction,
+                argparse._SubParsersAction._ChoicesPseudoAction,
+            ),
         ):
             return lambda tuple_size: (action.metavar or default_metavar,) * tuple_size
         # Different than usual argparse formatters: choices are always next to metavar
-        if action.metavar is not None:
-            result = action.metavar
-        else:
-            result = default_metavar
+        result = action.metavar if action.metavar is not None else default_metavar
 
         if action.choices is not None:
             choices = f'={{{",".join(map(str, action.choices))}}}'

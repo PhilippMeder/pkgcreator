@@ -7,19 +7,13 @@ from pkgcreator.logging_tools import logged_subprocess_run
 class GitNotAvailableError(OSError):
     """Exception class when no Git installation was not found."""
 
-    pass
-
 
 class GitRepositoryExistsError(FileExistsError):
     """Exception class when Git repository already exists."""
 
-    pass
-
 
 class GitRepositoryNotFoundError(FileNotFoundError):
     """Exception class when Git repository was not found."""
-
-    pass
 
 
 def run_git_command(

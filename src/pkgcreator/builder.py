@@ -8,8 +8,6 @@ from pkgcreator import GithubRepository
 class PackageExistsError(FileExistsError):
     """Exception class when package directory already exists."""
 
-    pass
-
 
 def default_classifiers() -> list[str]:
     """Return list of classifiers used as defaults."""

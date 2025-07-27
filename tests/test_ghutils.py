@@ -3,7 +3,7 @@ import pytest
 from pkgcreator import GithubRepository
 
 
-def test_github_urls():
+def test_github_urls() -> None:
     user = "python"
     repo_name = "cpython"
     branch = "main"
@@ -44,7 +44,7 @@ def test_github_urls():
 
 
 @pytest.mark.skip(reason="github api limits access rate")
-def test_github_download():
+def test_github_download() -> None:
     # TODO: Write and move import to top
     # from importlib.util import find_spec
 

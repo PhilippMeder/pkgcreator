@@ -22,11 +22,11 @@ class MockCLIArgs:
     init_venv: bool = False
 
 
-def get_mock_args(tmp_path: Path, **kwargs):
+def get_mock_args(tmp_path: Path, **kwargs) -> MockCLIArgs:
     return MockCLIArgs(destination=tmp_path, name="test_package", **kwargs)
 
 
-def test_creation_fails_if_path_exists(tmp_path: Path):
+def test_creation_fails_if_path_exists(tmp_path: Path) -> None:
     args = get_mock_args(tmp_path)
 
     # Simulate existing package
@@ -37,7 +37,7 @@ def test_creation_fails_if_path_exists(tmp_path: Path):
         creation_mode(args)
 
 
-def test_basic_package_structure(tmp_path):
+def test_basic_package_structure(tmp_path: Path) -> None:
     args = get_mock_args(tmp_path)
     creation_mode(args)
 
@@ -53,7 +53,7 @@ def test_basic_package_structure(tmp_path):
 
 
 @pytest.mark.skipif(not GIT_AVAILABLE, reason="Git not available")
-def test_git_initialised(tmp_path):
+def test_git_initialised(tmp_path: Path) -> None:
     args = get_mock_args(tmp_path, init_git=True)
 
     creation_mode(args)
@@ -63,7 +63,7 @@ def test_git_initialised(tmp_path):
 
 
 @pytest.mark.skipif(not REQUESTS_AVAILABLE, reason="requests not installed")
-def test_license_file_created(tmp_path):
+def test_license_file_created(tmp_path: Path) -> None:
     args = get_mock_args(tmp_path)
     creation_mode(args)
 

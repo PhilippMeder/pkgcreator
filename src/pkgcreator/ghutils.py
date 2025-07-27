@@ -250,7 +250,7 @@ class GithubRepository:
                 idx += 1
                 size /= diff
 
-            unit = units[idx] if idx in units else "??"
+            unit = units.get(idx, "??")
 
             return f"{size:>4.2f} {unit}"
 

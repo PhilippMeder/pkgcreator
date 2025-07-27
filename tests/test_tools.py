@@ -7,7 +7,7 @@ from pkgcreator.cli_tools import ConsistentFormatter
 from pkgcreator.logging_tools import LoggerFormatter
 
 
-def get_example_parsers():
+def get_example_parsers() -> tuple[argparse.ArgumentParser, argparse._SubParsersAction]:
     parent_parser = argparse.ArgumentParser(
         prog="test", description="some description", formatter_class=ConsistentFormatter
     )
@@ -38,7 +38,7 @@ def get_example_parsers():
     return parent_parser, parser
 
 
-def test_argparse_formatter():
+def test_argparse_formatter() -> None:
     parent_parser, parser = get_example_parsers()
 
     # Test main parser
@@ -68,12 +68,12 @@ def test_argparse_formatter():
         assert line in help_text_lines
 
 
-def remove_ansi_codes(text):
+def remove_ansi_codes(text: str) -> str:
     ansi_escape = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
     return ansi_escape.sub("", text)
 
 
-def test_logger_formatter():
+def test_logger_formatter() -> None:
     # Create logger with the formatter we want to test and set the ouput to a StringIO
     logger = logging.getLogger("test_logger")
     logger.setLevel(logging.INFO)

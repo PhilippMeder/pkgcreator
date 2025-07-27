@@ -7,7 +7,7 @@ from pkgcreator import VirtualEnvironment, PythonPackage, FileContent, ProjectSe
 
 
 @pytest.mark.skip(reason="needs to long, turn it on again later")
-def test_venv_creation(tmp_path: Path):
+def test_venv_creation(tmp_path: Path) -> None:
     # Create a package to install later
     package_name = "test_package"
     builder = PythonPackage(tmp_path, package_name)

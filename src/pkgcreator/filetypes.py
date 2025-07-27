@@ -174,15 +174,3 @@ class Toml(BaseFileType):
             return f"{name} = {value}"
         else:
             return f'{name} = "{value}"'
-
-
-if __name__ == "__main__":
-    file = Readme([])
-    file.add_heading("Heading")
-    file.add_toc()
-    file.add_heading("Subheading 1", level=1)
-    file.add_heading("Subheading 2", level=1)
-    file.add_list("entry a", "entry b", "entry c")
-    file.add_named_list({"Source code": "some link", "Report bugs": "some other link"})
-    file.add_toc()
-    print(file.content)

@@ -21,12 +21,12 @@ def make_background_box(color: str = "", stroke_color: str = "", stroke_width: i
 
 
 def make_3d_box(
-    x: int | float = 30,
-    y: int | float = 30,
-    height: int | float = 40,
-    width: int | float = 40,
-    delta_height: int | float = 10,  # to lazy to do angle calculation
-    delta_width: int | float = 10,  # to lazy to do angle calculation
+    x: float = 30,
+    y: float = 30,
+    height: float = 40,
+    width: float = 40,
+    delta_height: float = 10,  # to lazy to do angle calculation
+    delta_width: float = 10,  # to lazy to do angle calculation
     front_color: str = "#f3c76b",
     side_color: str = "#d6a24c",
     top_color: str = "#ffe19c",
@@ -103,14 +103,14 @@ def make_3d_box(
 
 def make_text(
     text: str,
-    x: int | float = 30,
-    y: int | float = 30,
+    x: float = 30,
+    y: float = 30,
     color: str = "#000000",
     font: str = "Liberation Sans",
     size: int = 20,
     weight: str = "bold",
     stroke_color: str = "",
-    stroke_width: int | float = 2,
+    stroke_width: float = 2,
 ):
     return (
         f'<text id="text-{text}" x="{x}" y="{y}" font-family="{font}" '

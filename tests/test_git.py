@@ -12,7 +12,7 @@ from pkgcreator import (
 
 
 @pytest.mark.skipif(not GIT_AVAILABLE, reason="Git not available")
-def test_git_init(tmp_path: Path):
+def test_git_init(tmp_path: Path) -> None:
     # Check init
     repo = GitRepository(tmp_path)
     repo.init()
@@ -24,7 +24,7 @@ def test_git_init(tmp_path: Path):
 
 
 @pytest.mark.skipif(not GIT_AVAILABLE, reason="Git not available")
-def test_git_commit(tmp_path: Path):
+def test_git_commit(tmp_path: Path) -> None:
     # Make sure the tmp directory does not exist, else this test function is useless
     repo = GitRepository(tmp_path)
 

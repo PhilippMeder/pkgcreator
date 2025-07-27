@@ -9,13 +9,9 @@ from pkgcreator.logging_tools import logger, logged_subprocess_run
 class VirtualEnvironmentNotFoundError(FileNotFoundError):
     """Exception raised when virtual environment was not found."""
 
-    pass
-
 
 class InconsistentStateError(Exception):
     """Exception raised when a logical inconsistency occurs."""
-
-    pass
 
 
 class ConcreteEnvBuilder(venv.EnvBuilder):

@@ -11,11 +11,11 @@ class Issue:
     lineno: int
     msg: str
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.filepath}:{self.lineno}: {self.msg}"
 
 
-def find_problematic_fstrings_in_file(filepath: Path):
+def find_problematic_fstrings_in_file(filepath: Path) -> list[Issue]:
     try:
         with filepath.open("r", encoding="utf-8") as f:
             source = f.read()
@@ -45,7 +45,7 @@ def find_problematic_fstrings_in_file(filepath: Path):
     return results
 
 
-def get_problemeatic_fstrings(target: str | Path):
+def get_problemeatic_fstrings(target: str | Path) -> list[Issue]:
     project_root = Path(target)
     python_files = list(project_root.rglob("*.py"))
 
