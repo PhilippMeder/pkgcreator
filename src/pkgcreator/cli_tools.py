@@ -166,7 +166,7 @@ argparse.ArgumentParser
         f"{tab}subparsers: argparse._SubParsersAction = None,",
         f"{tab}prog: str = None,",
         f"{tab}formatter_class: type = None,",
-        f") -> argparse.ArgumentParser:",
+        ") -> argparse.ArgumentParser:",
         textwrap.indent(docstring, tab),
         f'{tab}parser_options = {"{"}',
         f'{tab*2}"description": "{description}",',

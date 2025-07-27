@@ -413,7 +413,7 @@ def creation_mode(args: argparse.Namespace):
         not get_prompt_bool(msg, args.prompt_mode, auto_decision=True)
         and args.prompt_mode != "no"
     ):
-        logger.info(f"Creation aborted")
+        logger.info("Creation aborted")
         return
 
     # Create the package structure with file content
@@ -477,7 +477,7 @@ def github_download_mode(args: argparse.Namespace):
     )
 
     if args.list_content:
-        logger.info(f"Getting content (this may take some time)...")
+        logger.info("Getting content (this may take some time)...")
         content_str = repository.get_contents_str(
             subfolder=args.subfolder,
             branch=args.branch,

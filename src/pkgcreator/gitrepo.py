@@ -1,8 +1,7 @@
-import argparse
 import subprocess
 from pathlib import Path
 
-from pkgcreator.logging_tools import logger, logged_subprocess_run
+from pkgcreator.logging_tools import logged_subprocess_run
 
 
 class GitNotAvailableError(OSError):
@@ -103,7 +102,7 @@ def _is_git_available():
     try:
         run_git_command("--version", silent=True)
         return True
-    except Exception as err:
+    except Exception as _err:
         return False
 
 

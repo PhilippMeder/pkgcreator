@@ -1,4 +1,3 @@
-import argparse
 from pathlib import Path
 
 from pkgcreator.logging_tools import logger

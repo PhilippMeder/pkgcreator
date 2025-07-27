@@ -17,7 +17,7 @@ class FileContent(dict):
         kwargs.setdefault("LICENSE", self.get_license())
         try:
             self.license_name = kwargs["LICENSE"].splitlines()[0]
-        except Exception as err:
+        except Exception as _err:
             self.license_name = "LICENSENAME"
         kwargs.setdefault("pyproject.toml", self.get_pyproject_toml())
         kwargs.setdefault("README.md", self.get_readme())
