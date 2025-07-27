@@ -17,9 +17,21 @@ After all that
     - [x] toc
     - [x] check
     - [x] logo?
-- [ ] test what python versions work
-    - [ ] write tests
-    - [ ] auto-run tests for different Python versions (first tests are promising that 3.10 & 3.11 are working)
+- [ ] write tests
+    - [x] builder/cli
+    - [x] git
+    - [x] venv
+    - [x] tools
+    - [x] ghutils urls
+    - [ ] ghutils download (`requests` to the GitHub API are limited, so how can this be done without a real access?)
+- [ ] auto-run tests for different Python versions (first tests are promising that 3.10 & 3.11 are working)
 - [ ] update pyproject.toml
     - [ ] maybe `dynamic = ["description"]` to create description dynamically (README)?
+- [ ] inform about GitHub workflows and tagging
+    - [ ] how and when to run tests (with `pytest`) automatically for different versions of Python
+    - [ ] how and when to publish automatically to PyPI
+    - [ ] tagging and package version
+    - [ ] what is best?:
+        - branches `main` and `dev`, only run tests and publishing to PyPI on a push to `main` (should failed tests prevent a publishing?), push all little updates to `dev`
+        - push all to `main` but tag manually, tagging triggers tests and publishing
 - [ ] publish

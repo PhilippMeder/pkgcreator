@@ -1,16 +1,13 @@
 from dataclasses import dataclass
+from importlib.util import find_spec
 from pathlib import Path
 
 import pytest
 
-try:
-    import requests
-
-    REQUESTS_AVAILABLE = True
-except ImportError:
-    REQUESTS_AVAILABLE = False
-
 from pkgcreator.cli import creation_mode, GIT_AVAILABLE
+
+
+REQUESTS_AVAILABLE = False if find_spec("requests") is None else True
 
 
 @dataclass(kw_only=True)

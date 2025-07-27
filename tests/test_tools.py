@@ -3,8 +3,8 @@ import logging
 import io
 import re
 
-from pkgcreator.cli_tools import ConsistentFormatter, generate_parser_template
-from pkgcreator.logging_tools import logger, LoggerFormatter
+from pkgcreator.cli_tools import ConsistentFormatter
+from pkgcreator.logging_tools import LoggerFormatter
 
 
 def get_example_parsers():
