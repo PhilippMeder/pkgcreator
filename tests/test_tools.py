@@ -15,7 +15,7 @@ def get_example_parsers():
     subparsers = parent_parser.add_subparsers(dest="subcommands")
     parser = subparsers.add_parser(
         "command1",
-        description="command description",
+        description="command description without PERIOD <FORMATTER:NOPERIOD>",
         help="call command 1",
         formatter_class=ConsistentFormatter,
     )
@@ -59,7 +59,7 @@ def test_argparse_formatter():
     help_text_lines = [line.strip() for line in help_text.splitlines()]
     important_lines = [
         "usage: test command1 [-h] [-p <PATH>] [-m <MODE={ask,yes,no,auto}>] <NAME>",
-        "Command description.",
+        "Command description without PERIOD",
         "<NAME>                Set name.",
         "-p, --some-path <PATH>",
         "-m, --mode <MODE={ask,yes,no,auto}>",

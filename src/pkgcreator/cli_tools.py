@@ -96,7 +96,7 @@ class ConsistentFormatter(argparse.HelpFormatter):
 
         if not text.endswith((".", "!", "?")):
             if text.endswith("<FORMATTER:NOPERIOD>"):
-                text = text.rstrip("<FORMATTER:NOPERIOD>").rstrip()
+                text = text.removesuffix("<FORMATTER:NOPERIOD>").rstrip()
             else:
                 text += "."
 
