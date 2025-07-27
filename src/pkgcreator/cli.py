@@ -3,17 +3,17 @@ from pathlib import Path
 from subprocess import CalledProcessError
 
 from pkgcreator import (
+    GIT_AVAILABLE,
     FileContent,
-    PackageExistsError,
-    ProjectSettings,
-    PythonPackage,
-    GitNotAvailableError,
     GithubRepository,
+    GitNotAvailableError,
     GitRepository,
     GitRepositoryExistsError,
     GitRepositoryNotFoundError,
+    PackageExistsError,
+    ProjectSettings,
+    PythonPackage,
     VirtualEnvironment,
-    GIT_AVAILABLE,
     get_available_licenses,
     get_git_config_value,
 )

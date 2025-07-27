@@ -1,5 +1,5 @@
 import argparse
-from dataclasses import dataclass, fields, field, MISSING
+from dataclasses import MISSING, dataclass, field, fields
 from pathlib import Path
 
 from pkgcreator import GithubRepository

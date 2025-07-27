@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from pkgcreator import VirtualEnvironment, PythonPackage, FileContent, ProjectSettings
+from pkgcreator import FileContent, ProjectSettings, PythonPackage, VirtualEnvironment
 
 
 @pytest.mark.skip(reason="needs to long, turn it on again later")

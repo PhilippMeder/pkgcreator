@@ -1,6 +1,6 @@
 import argparse
-import logging
 import io
+import logging
 import re
 
 from pkgcreator.cli_tools import ConsistentFormatter

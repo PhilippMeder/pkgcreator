@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from pkgcreator.cli import creation_mode, GIT_AVAILABLE
+from pkgcreator.cli import GIT_AVAILABLE, creation_mode
 
 
 REQUESTS_AVAILABLE = False if find_spec("requests") is None else True
