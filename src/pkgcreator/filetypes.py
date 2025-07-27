@@ -28,9 +28,8 @@ class Readme(BaseFileType):
 
     def add_text(self, *lines: str, bold: bool = False):
         for text in lines:
-            if bold:
-                text = self.bold(text)
-            self._lines.append(text)
+            final_text = self.bold(text) if bold else text
+            self._lines.append(final_text)
 
     def add_heading(self, text: str, level: int = 0, to_toc: bool = True):
         if self._lines and not self._lines[-1].endswith(self.newline):
@@ -141,7 +140,7 @@ class Toml(BaseFileType):
         if not content:
             self._lines.append(self.variable(name, "[]", bare_value=True))
             return
-        if len(content) < 2:
+        if len(content) == 1:
             self._lines.append(self.variable(name, f"[{content[0]}]", bare_value=True))
             return
         # Multinline list

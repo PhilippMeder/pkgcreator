@@ -47,11 +47,10 @@ class ConsistentFormatter(argparse.HelpFormatter):
                     for value in result
                 ]
                 return tuple(final)  # this is necessary
+            elif isinstance(result, str):
+                return (f"<{result.upper()}{choices}>",) * tuple_size
             else:
-                if isinstance(result, str):
-                    return (f"<{result.upper()}{choices}>",) * tuple_size
-                else:
-                    return (f"<{result}{choices}>",) * tuple_size
+                return (f"<{result}{choices}>",) * tuple_size
 
         return format
 
@@ -189,10 +188,10 @@ argparse.ArgumentParser
         body_lines.append(f'{tab}group = parser.add_argument_group("{group_name}")')
         for arg, help_text in args.items():
             if isinstance(arg, str):
-                arg = f'"{arg}"'
+                arg_str = f'"{arg}"'
             else:
-                arg = ", ".join([f'"{this_arg}"' for this_arg in arg])
-            body_lines.append(f'{tab}group.add_argument({arg}, help="{help_text}")')
+                arg_str = ", ".join([f'"{this_arg}"' for this_arg in arg])
+            body_lines.append(f'{tab}group.add_argument({arg_str}, help="{help_text}")')
         body_lines.append("")
 
     body_lines.append(f"{tab}return parser")

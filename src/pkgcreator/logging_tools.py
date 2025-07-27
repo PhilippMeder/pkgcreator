@@ -69,11 +69,11 @@ class LoggerPipe:
             self._rfd, "r", encoding=self.encoding, errors=self.errors
         ) as reader:
             for line in reader:
-                line = line.rstrip("\r\n")
-                if line:
+                clean_line = line.rstrip("\r\n")
+                if clean_line:
                     if self.save:
-                        self._collected_lines.append(line)
-                    self.logger.log(self.level, f"{self.prefix}{line}")
+                        self._collected_lines.append(clean_line)
+                    self.logger.log(self.level, f"{self.prefix}{clean_line}")
 
     def close(self) -> None:
         """Close the writable pipe end and waits for the reader thread to finish."""
