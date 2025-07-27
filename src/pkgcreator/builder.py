@@ -41,6 +41,7 @@ class ProjectSettings:
     source: str = None
 
     def __post_init__(self):
+        """Create the GithubRepository object from the parameters."""
         self.github_repository = GithubRepository(
             self.github_username, self.github_repositoryname
         )

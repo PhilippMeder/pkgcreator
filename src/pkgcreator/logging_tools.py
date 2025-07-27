@@ -7,6 +7,8 @@ import traceback
 
 class LoggerPipe:
     """
+    A file-like object that can be passed to subprocess stdout or stderr.
+
     A file-like object with a valid file descriptor (fileno()) that can be passed
     to subprocess stdout or stderr. It captures the subprocess output and streams
     it line-by-line into a Python logger, optionally storing the lines.
@@ -52,7 +54,7 @@ class LoggerPipe:
 
     def fileno(self) -> int:
         """
-        Returns the OS-level writable file descriptor to be used by subprocess.
+        Return the OS-level writable file descriptor to be used by subprocess.
 
         Returns
         -------
@@ -62,9 +64,7 @@ class LoggerPipe:
         return self._wfd
 
     def _reader_thread(self) -> None:
-        """
-        Internal thread that reads from the pipe and logs each line.
-        """
+        """Run internal thread that reads from the pipe and logs each line."""
         with os.fdopen(
             self._rfd, "r", encoding=self.encoding, errors=self.errors
         ) as reader:
@@ -76,9 +76,7 @@ class LoggerPipe:
                     self.logger.log(self.level, f"{self.prefix}{line}")
 
     def close(self) -> None:
-        """
-        Closes the writable pipe end and waits for the reader thread to finish.
-        """
+        """Close the writable pipe end and waits for the reader thread to finish."""
         try:
             os.close(self._wfd)
         except OSError:
@@ -88,7 +86,7 @@ class LoggerPipe:
     @property
     def lines(self) -> list[str] | None:
         """
-        Returns the collected output lines, if saving is enabled.
+        Return the collected output lines, if saving is enabled.
 
         Returns
         -------
@@ -99,7 +97,7 @@ class LoggerPipe:
 
     def __enter__(self) -> "LoggerPipe":
         """
-        Enters the context manager.
+        Enter the context manager.
 
         Returns
         -------
@@ -109,9 +107,7 @@ class LoggerPipe:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
-        """
-        Exits the context manager and cleans up resources.
-        """
+        """Exit the context manager and cleans up resources."""
         self.close()
 
 
@@ -127,8 +123,7 @@ def logged_subprocess_run(
     **kwargs,
 ) -> subprocess.CompletedProcess:
     """
-    Runs a subprocess, streams stdout and stderr to a logger in real-time,
-    and returns a CompletedProcess object including captured output.
+    Run a subprocess and stream stdout and stderr to a logger in real-time.
 
     Parameters
     ----------
@@ -275,7 +270,7 @@ class LoggerFormatter(logging.Formatter):
 
 def get_logger() -> logging.Logger:
     """
-    Creates and returns a logger configured for colored terminal output.
+    Create and return a logger configured for colored terminal output.
 
     Returns
     -------

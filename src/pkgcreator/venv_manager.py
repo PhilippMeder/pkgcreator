@@ -30,9 +30,7 @@ class ConcreteEnvBuilder(venv.EnvBuilder):
         super().__init__(*args, **kwargs)
 
     def post_setup(self, context) -> None:
-        """
-        Add `.gitignore` and call creation callback after venv was created..
-        """
+        """Add `.gitignore` and call creation callback after venv was created."""
         self.create_git_ignore_file(context)
         if self.creation_callback is not None:
             self.creation_callback(context)
@@ -83,6 +81,8 @@ class VirtualEnvironment:
     @property
     def venv_dir(self) -> Path:
         """
+        Return path to the virtual environment directory.
+
         Returns
         -------
         Path
@@ -93,6 +93,8 @@ class VirtualEnvironment:
     @property
     def python(self) -> Path:
         """
+        Return path to the Python executable of the virtual environment (if available).
+
         Returns
         -------
         Path
@@ -235,7 +237,7 @@ class VirtualEnvironment:
 
     def _process_creation_context(self, context) -> None:
         """
-        Stores the path to the Python executable in the venv after creation.
+        Store the path to the Python executable in the venv after creation.
 
         Parameters
         ----------

@@ -141,7 +141,7 @@ class FileContent(dict):
         return file.content
 
     def get_main_py(self):
-        """Basic content for __main__.py"""
+        """Get basic content for __main__.py."""
         name = self.project_settings.name
         tab = f"{'':4}"
         return "\n".join(
