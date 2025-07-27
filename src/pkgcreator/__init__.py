@@ -1,6 +1,6 @@
+from pkgcreator.ghutils import GithubRepository
 from pkgcreator.builder import PackageExistsError, ProjectSettings, PythonPackage
 from pkgcreator.file_contents import FileContent, get_available_licenses, get_license
-from pkgcreator.ghutils import GithubRepository
 from pkgcreator.gitrepo import (
     GIT_AVAILABLE,
     GitNotAvailableError,
