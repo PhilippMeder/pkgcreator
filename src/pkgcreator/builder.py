@@ -1,3 +1,12 @@
+"""
+Module for managing Python package settings and generating the directory structure.
+
+Includes tools to:
+- Define and parse project metadata.
+- Interface with GitHub-based URLs.
+- Generate a file and folder structure for Python packages.
+"""
+
 import argparse
 from dataclasses import MISSING, dataclass, field, fields
 from pathlib import Path
@@ -6,11 +15,18 @@ from pkgcreator import GithubRepository
 
 
 class PackageExistsError(FileExistsError):
-    """Exception class when package directory already exists."""
+    """Raised when the package directory already exists and creation is attempted."""
 
 
 def default_classifiers() -> list[str]:
-    """Return list of classifiers used as defaults."""
+    """
+    Return a list of default PyPI classifiers.
+
+    Returns
+    -------
+    list of str
+        Default classifiers used in the package metadata.
+    """
     return [
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
@@ -19,6 +35,39 @@ def default_classifiers() -> list[str]:
 
 @dataclass(kw_only=True)
 class ProjectSettings:
+    """
+    Container for project metadata and configuration used to create a Python package.
+
+    This includes fields for package name, author, URLs, dependencies, classifiers, and
+    GitHub repository information.
+
+    Attributes
+    ----------
+    make_script : bool
+        Whether to create an entry-point script.
+    dependencies : list of str
+        Required dependencies for the package.
+    optional_dependencies : list of str
+        Optional dependencies for the package.
+    classifiers : list of str
+        List of PyPI classifiers.
+    license_id : str or None
+        License identifier.
+    name : str
+        Package name.
+    description : str
+        Short package description.
+    author_name : str
+        Author's name.
+    author_mail : str
+        Author's email address.
+    github_username : str
+        GitHub username.
+    github_repositoryname : str
+        GitHub repository name.
+    changelog, documentation, download, funding, homepage, issues, releasenotes, source : str or None
+        Optional URLs related to the project.
+    """
 
     make_script: bool = False
     dependencies: list[str] = field(default_factory=list)
@@ -46,8 +95,20 @@ class ProjectSettings:
             self.github_username, self.github_repositoryname
         )
 
-    def __getattribute__(self, name):
-        """Return value of attribute 'name', but take care of default values."""
+    def __getattribute__(self, name: str):
+        """
+        Get attribute value and automatically generate URL if unset.
+
+        Parameters
+        ----------
+        name : str
+            Attribute name.
+
+        Returns
+        -------
+        any
+            Attribute value or auto-generated URL.
+        """
         value = super().__getattribute__(name)
         if value is None and name in self.get_url_fields():
             return self.github_repository.get_url(name, branch=False)
@@ -55,27 +116,66 @@ class ProjectSettings:
             return value
 
     def is_default(self, name: str) -> bool:
-        """Check if the value of field 'name' equals to the default value."""
+        """
+        Check whether a field is set to its default value.
+
+        Parameters
+        ----------
+        name : str
+            Field name.
+
+        Returns
+        -------
+        bool
+            True if field has default value, False otherwise.
+
+        Raises
+        ------
+        AttributeError
+            If the field name is invalid.
+        """
         for _field in fields(self):
             if _field.name != name:
                 continue
             return getattr(self, name) == _field.default
         else:
-            raise AttributeError(f"Field '{name}' unkown!")
+            msg = f"Field '{name}' unkown!"
+            raise AttributeError(msg)
 
     @property
     def github(self) -> str:
-        """Return the link to the github repository."""
+        """
+        Get the URL to the GitHub repository.
+
+        Returns
+        -------
+        str
+            GitHub repository URL.
+        """
         return self.github_repository.get_url(branch=False)
 
     @property
     def github_owner(self) -> str:
-        """Return the link to the owner of the github repository."""
+        """
+        Get the URL to the GitHub account (repository owner).
+
+        Returns
+        -------
+        str
+            GitHub owner URL.
+        """
         return self.github_repository.get_url("owner", branch=False)
 
     @staticmethod
     def get_url_fields():
-        """Return a tuple of field names that represent a project url."""
+        """
+        Return the names of fields that represent URLs.
+
+        Returns
+        -------
+        tuple of str
+            Field names for URL fields.
+        """
         return (
             "changelog",
             "documentation",
@@ -89,7 +189,14 @@ class ProjectSettings:
 
     @staticmethod
     def get_advanced_fields():
-        """Return a tuple of field names that represent an advanced setting."""
+        """
+        Return the names of fields that are considered advanced settings.
+
+        Returns
+        -------
+        tuple of str
+            Field names for advanced settings.
+        """
         return (
             "classifiers",
             "dependencies",
@@ -98,7 +205,14 @@ class ProjectSettings:
 
     @property
     def urls(self) -> dict[str]:
-        """Return '{name: url}' dictionary for project urls."""
+        """
+        Get dictionary of URL-related fields and their values.
+
+        Returns
+        -------
+        dict of str
+            Mapping of field names to URL values.
+        """
         names = self.get_url_fields()
         return {
             name: _url for name in names if (_url := getattr(self, name)) is not None
@@ -106,7 +220,14 @@ class ProjectSettings:
 
     @property
     def nice_str(self) -> str:
-        """Return a table-like string representation of the fields."""
+        """
+        Return a formatted string representation of all fields with their values.
+
+        Returns
+        -------
+        str
+            Multiline string displaying all non-empty fields.
+        """
         values = {
             _field.name: value
             for _field in fields(self)
@@ -120,7 +241,16 @@ class ProjectSettings:
     def add_to_argparser(
         cls, parser: argparse.ArgumentParser, ignore: tuple[str] | list[str] = None
     ):
-        """Add all fields that are not in 'ignore' to an argument parser."""
+        """
+        Add project fields as arguments to an argparse.ArgumentParser.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Argument parser to modify.
+        ignore : list or tuple of str, optional
+            Field names to ignore.
+        """
         if ignore is None:
             ignore = []
         # Setup sections
@@ -181,7 +311,19 @@ class ProjectSettings:
 
     @classmethod
     def from_argparser(cls, args: argparse.Namespace):
-        """Return instance of this class with options set to the values of 'args'."""
+        """
+        Create a ProjectSettings instance from parsed arguments.
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Parsed command-line arguments.
+
+        Returns
+        -------
+        ProjectSettings
+            Initialized project settings object.
+        """
         args_dict = vars(args)
         names = [_field.name for _field in fields(cls)]
         options = {name: value for name, value in args_dict.items() if name in names}
@@ -190,7 +332,26 @@ class ProjectSettings:
 
     @classmethod
     def get_field_default(cls, _field, raise_err: bool = True):
-        """Return the default value of a field while taking care of default_factory."""
+        """
+        Get the default value of a dataclass field (takes care of default_factory).
+
+        Parameters
+        ----------
+        _field : dataclasses.Field
+            Dataclass field to evaluate.
+        raise_err : bool, optional
+            Whether to raise an error if no default is defined.
+
+        Returns
+        -------
+        any
+            Default value of the field.
+
+        Raises
+        ------
+        ValueError
+            If no default or factory is found and raise_err is True.
+        """
         if _field.default is not MISSING:
             return _field.default
         elif _field.default_factory is not MISSING:
@@ -202,6 +363,31 @@ class ProjectSettings:
 
 
 class PythonPackage:
+    """
+    Tool to create a Python package directory structure.
+
+    Parameters
+    ----------
+    destination : str or Path
+        Base directory where the package should be created.
+    name : str
+        Name of the Python module/package.
+    dir_name : str, optional
+        Name of the directory for the new package (defaults to `name`).
+    add_main : bool, optional
+        Whether to include a `__main__.py` file (default is False).
+
+    Attributes
+    ----------
+    parent_dir : Path
+        Base directory where the package will be created.
+    dir_name : str
+        Name of the directory for the new package.
+    name : str
+        Name of the package (module name).
+    add_main : bool
+        Whether to include a `__main__.py` file.
+    """
 
     def __init__(
         self,
@@ -218,6 +404,7 @@ class PythonPackage:
 
     @property
     def parent_dir(self) -> Path:
+        """Get the base directory where the package is located."""
         return self._parent_dir
 
     @parent_dir.setter
@@ -226,6 +413,7 @@ class PythonPackage:
 
     @property
     def dir_name(self) -> str:
+        """Get the name of the directory for the package."""
         return self._dir_name
 
     @dir_name.setter
@@ -234,6 +422,7 @@ class PythonPackage:
 
     @property
     def name(self) -> str:
+        """Get the name of the package."""
         return self._name
 
     @name.setter
@@ -242,10 +431,12 @@ class PythonPackage:
 
     @property
     def project_path(self) -> Path:
+        """Get the full project path."""
         return self._project_path
 
     @property
     def structure(self) -> dict:
+        """Get the structure definition for the package."""
         module_files = ["__init__.py"]
         if self.add_main:
             module_files.append("__main__.py")
@@ -257,15 +448,37 @@ class PythonPackage:
         }
 
     def create(self, file_content: dict = None):
+        """
+        Create the folder and file structure for the package.
+
+        Parameters
+        ----------
+        file_content : dict, optional
+            Optional mapping of filenames to file content.
+
+        Raises
+        ------
+        PackageExistsError
+            If the target project directory already exists.
+        """
         if self.project_path.exists():
             msg = f"The project path '{self.project_path}' already exists!"
             raise PackageExistsError(msg)
         create_dir_structure(self.parent_dir, self.structure, file_content=file_content)
 
     def get_all_filenames(self):
+        """
+        Get a flat list of all filenames defined in the structure.
+
+        Returns
+        -------
+        list of str
+            List of all files in the structure.
+        """
         return get_all_filenames_from_structure(self.structure)
 
     def _set_project_path(self):
+        """Determine and set the full project path based on the directory structure."""
         if len(keys := list(self.structure.keys())) == 1:
             self._project_path = self.parent_dir.joinpath(keys[0])
         else:
@@ -273,7 +486,18 @@ class PythonPackage:
 
 
 def create_dir_structure(path: Path, structure: dict, file_content: dict = None):
-    """Create directory/file structure recursively."""
+    """
+    Recursively create directory and file structure.
+
+    Parameters
+    ----------
+    path : Path
+        Root path where the structure should be created.
+    structure : dict
+        Nested dictionary describing folders and files.
+    file_content : dict, optional
+        Optional mapping of filenames to file content.
+    """
     for key, substructure in structure.items():
         if key == "FILES":
             # Create files and, if available, set the content
@@ -291,6 +515,19 @@ def create_dir_structure(path: Path, structure: dict, file_content: dict = None)
 
 
 def get_all_filenames_from_structure(structure: dict) -> list[str]:
+    """
+    Recursively extract all filenames from a folder structure definition.
+
+    Parameters
+    ----------
+    structure : dict
+        Nested dictionary describing files and folders.
+
+    Returns
+    -------
+    list of str
+        All file names in the structure.
+    """
     files = []
     for key, substructure in structure.items():
         if key == "FILES":

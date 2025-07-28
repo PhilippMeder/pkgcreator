@@ -1,3 +1,15 @@
+"""
+Module for creating the file content for the important files of a Python package.
+
+Includes tools to:
+- List and download available license from 'choosealicense.com'.
+- Create the file content according to the project seetings for:
+    - pyproject.toml
+    - README.md
+    - __main__.py
+    - .gitignore
+"""
+
 from datetime import datetime
 from pathlib import Path
 from sys import version_info
@@ -10,6 +22,32 @@ from pkgcreator.logging_tools import logger
 
 
 class FileContent(dict):
+    """
+    Provides file contents for standard package files based on project settings.
+
+    Acts like a dictionary, where filenames are keys and their contents are values.
+    Use keyword arguments to override default content or add custom files.
+
+    Examples
+    --------
+    To override the default content of, e.g. `.gitignore`:
+        FileContent(project_settings, ".gitignore": new_content, ...)
+
+    To add a new file such as `CHANGELOG.md`:
+        FileContent(project_settings, "CHANGELOG.md": changelog_content, ...)
+
+    Parameters
+    ----------
+    project_settings : ProjectSettings
+        Settings used to generate default file contents.
+    kwargs : dict of str
+        Optional custom file contents. Keys are filenames, values are content strings.
+
+    Notes
+    -----
+    Default files include:
+        `.gitignore`, `LICENSE`, `pyproject.toml`, `README.md`, and `__main__.py`.
+    """
 
     def __init__(self, project_settings: ProjectSettings, **kwargs):
         self.project_settings = project_settings

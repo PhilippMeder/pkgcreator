@@ -1,3 +1,9 @@
+"""
+Module for the command line interface of pkgcreator.
+
+Includes all parsers and the logic for the CLI.
+"""
+
 import argparse
 from pathlib import Path
 from subprocess import CalledProcessError

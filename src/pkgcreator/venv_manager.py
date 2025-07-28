@@ -1,3 +1,12 @@
+"""
+Module for working with virtual environments.
+
+Includes tools to:
+- Create or access a virtual environment with `venv`.
+- Get the Python executable of a virtual environment.
+- Install Python packages into a virtual environment.
+"""
+
 import subprocess
 import venv
 from pathlib import Path

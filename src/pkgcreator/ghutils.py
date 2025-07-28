@@ -1,3 +1,12 @@
+"""
+Module for working with parts of a GitHub repository.
+
+Includes tools to:
+- Get important URLs of a GitHub repository.
+- Get the content of a GitHub repository.
+- Download (a part of) the content of a GitHub repository.
+"""
+
 from pathlib import Path
 
 from pkgcreator.logging_tools import logger

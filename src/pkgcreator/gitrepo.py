@@ -1,3 +1,13 @@
+"""
+Module for working with Git in Python.
+
+Includes tools to:
+- Check whether Git is available on the system.
+- Get values from the Git config.
+- Run Git commands.
+- Create and manage a Git repository.
+"""
+
 import subprocess
 from pathlib import Path
 

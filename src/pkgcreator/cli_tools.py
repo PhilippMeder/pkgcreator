@@ -1,3 +1,12 @@
+"""
+Module for general command line interface (CLI) tools.
+
+Includes tools to:
+- Achive a consistent formatting for argparse help.
+- Create the template code for a function that adds a parser as standalone or subparser.
+- Get the result of a prompt according to a mode (so you can auto run user decisions).
+"""
+
 import argparse
 
 

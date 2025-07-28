@@ -1,3 +1,11 @@
+"""
+Module for logging tools.
+
+Includes tools to:
+- Run a subprocess that streams the ouput live to a logger (instead of after finishing).
+- Format the logger output in a user-friendly way, e.g. `[WARNING] Message`.
+"""
+
 import logging
 import os
 import subprocess
@@ -227,6 +235,7 @@ class LoggerFormatter(logging.Formatter):
         super().__init__(*args, **kwargs)
 
     def format(self, record: logging.LogRecord) -> str:
+        """Format the specified record as text."""
         color = COLORS.get(record.levelno, RESET)
         message = record.getMessage()
 
@@ -250,6 +259,7 @@ class LoggerFormatter(logging.Formatter):
         return f"{color}{title}{message}{description}{RESET}"
 
     def add_info_to_title(self, title: str, record: logging.LogRecord) -> str:
+        """Return the title with info added according to the settings."""
         if self.show_location:
             loc = f"File {record.pathname}, line {record.lineno}, in {record.module}"
             title = f"{title} {loc}:"
@@ -257,6 +267,7 @@ class LoggerFormatter(logging.Formatter):
         return f"{title} "
 
     def add_to_description(self, description: str, record: logging.LogRecord) -> str:
+        """Return the description with info added according to the settings."""
         if self.show_exc_info and (info := record.exc_info):
             description = f"{description} {info[0].__name__}: {info[1]}"
         if self.show_traceback and record.exc_info:
