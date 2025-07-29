@@ -1,3 +1,5 @@
+"""Tests for the Git tools."""
+
 from pathlib import Path
 from subprocess import CalledProcessError
 
@@ -13,6 +15,7 @@ from pkgcreator import (
 
 @pytest.mark.skipif(not GIT_AVAILABLE, reason="Git not available")
 def test_git_init(tmp_path: Path) -> None:
+    """Test the correct initialisation of a GitRepository and failing if it exists."""
     # Check init
     repo = GitRepository(tmp_path)
     repo.init()
@@ -25,6 +28,7 @@ def test_git_init(tmp_path: Path) -> None:
 
 @pytest.mark.skipif(not GIT_AVAILABLE, reason="Git not available")
 def test_git_commit(tmp_path: Path) -> None:
+    """Test commiting to a Git repository."""
     # Make sure the tmp directory does not exist, else this test function is useless
     repo = GitRepository(tmp_path)
 

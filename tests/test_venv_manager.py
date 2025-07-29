@@ -1,3 +1,5 @@
+"""Tests for the virutal environment managment."""
+
 import subprocess
 from pathlib import Path
 
@@ -8,6 +10,7 @@ from pkgcreator import FileContent, ProjectSettings, PythonPackage, VirtualEnvir
 
 @pytest.mark.skip(reason="needs to long, turn it on again later")
 def test_venv_creation(tmp_path: Path) -> None:
+    """Test the creation of a venv and the installation of packages."""
     # Create a package to install later
     package_name = "test_package"
     builder = PythonPackage(tmp_path, package_name)

@@ -1,3 +1,5 @@
+"""Tests for the CLI creation mode called by 'pkgcreator create'."""
+
 from dataclasses import dataclass
 from importlib.util import find_spec
 from pathlib import Path
@@ -12,6 +14,7 @@ REQUESTS_AVAILABLE = False if find_spec("requests") is None else True
 
 @dataclass(kw_only=True)
 class MockCLIArgs:
+    """Class to mock CLI arguments."""
 
     destination: Path
     name: str
@@ -23,10 +26,12 @@ class MockCLIArgs:
 
 
 def get_mock_args(tmp_path: Path, **kwargs) -> MockCLIArgs:
+    """Return example mocked CLI arguments."""
     return MockCLIArgs(destination=tmp_path, name="test_package", **kwargs)
 
 
 def test_creation_fails_if_path_exists(tmp_path: Path) -> None:
+    """Test whether the creation raises an error if the project path already exists."""
     args = get_mock_args(tmp_path)
 
     # Simulate existing package
@@ -38,6 +43,7 @@ def test_creation_fails_if_path_exists(tmp_path: Path) -> None:
 
 
 def test_basic_package_structure(tmp_path: Path) -> None:
+    """Test the correct creation of the package structure."""
     args = get_mock_args(tmp_path)
     creation_mode(args)
 
@@ -54,6 +60,7 @@ def test_basic_package_structure(tmp_path: Path) -> None:
 
 @pytest.mark.skipif(not GIT_AVAILABLE, reason="Git not available")
 def test_git_initialised(tmp_path: Path) -> None:
+    """Test whether the creation mode correctly initalises a Git repository."""
     args = get_mock_args(tmp_path, init_git=True)
 
     creation_mode(args)
@@ -64,6 +71,7 @@ def test_git_initialised(tmp_path: Path) -> None:
 
 @pytest.mark.skipif(not REQUESTS_AVAILABLE, reason="requests not installed")
 def test_license_file_created(tmp_path: Path) -> None:
+    """Test whether the creation mode correctly creates the LICENSE file with text."""
     args = get_mock_args(tmp_path)
     creation_mode(args)
 

@@ -1,3 +1,5 @@
+"""Tools to find issues that might break the support for lower Python versions."""
+
 import ast
 import sys
 from dataclasses import dataclass
@@ -6,6 +8,7 @@ from pathlib import Path
 
 @dataclass
 class Issue:
+    """Class to save a found issue."""
 
     filepath: Path
     lineno: int
@@ -16,6 +19,7 @@ class Issue:
 
 
 def find_problematic_fstrings_in_file(filepath: Path) -> list[Issue]:
+    """Find nested f-strings since newer Python version support additional syntax."""
     try:
         with filepath.open("r", encoding="utf-8") as f:
             source = f.read()
@@ -46,6 +50,7 @@ def find_problematic_fstrings_in_file(filepath: Path) -> list[Issue]:
 
 
 def get_problemeatic_fstrings(target: str | Path) -> list[Issue]:
+    """Find nested f-strings in all files of a directory."""
     project_root = Path(target)
     python_files = list(project_root.rglob("*.py"))
 

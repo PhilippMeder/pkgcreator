@@ -1,9 +1,12 @@
+"""Tests for the GitHub tools."""
+
 import pytest
 
 from pkgcreator import GithubRepository
 
 
 def test_github_urls() -> None:
+    """Test the URLs created by GithubRepository."""
     user = "python"
     repo_name = "cpython"
     branch = "main"
@@ -45,6 +48,7 @@ def test_github_urls() -> None:
 
 @pytest.mark.skip(reason="github api limits access rate")
 def test_github_download() -> None:
+    """Test the download function of GithubRepository."""
     # TODO: Write and move import to top
     # from importlib.util import find_spec
 

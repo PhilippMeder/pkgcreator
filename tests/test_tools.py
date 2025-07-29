@@ -1,3 +1,5 @@
+"""Test the additional tools (logging, CLI)."""
+
 import argparse
 import io
 import logging
@@ -8,6 +10,7 @@ from pkgcreator.logging_tools import LoggerFormatter
 
 
 def get_example_parsers() -> tuple[argparse.ArgumentParser, argparse._SubParsersAction]:
+    """Get an example pair of argparse (ArgumentParser, SubParser)."""
     parent_parser = argparse.ArgumentParser(
         prog="test", description="some description", formatter_class=ConsistentFormatter
     )
@@ -39,6 +42,7 @@ def get_example_parsers() -> tuple[argparse.ArgumentParser, argparse._SubParsers
 
 
 def test_argparse_formatter() -> None:
+    """Test the custom argparse formatter."""
     parent_parser, parser = get_example_parsers()
 
     # Test main parser
@@ -69,11 +73,13 @@ def test_argparse_formatter() -> None:
 
 
 def remove_ansi_codes(text: str) -> str:
+    """Delete all ansi codes from a text."""
     ansi_escape = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
     return ansi_escape.sub("", text)
 
 
 def test_logger_formatter() -> None:
+    """Test the custom logger formatter."""
     # Create logger with the formatter we want to test and set the ouput to a StringIO
     logger = logging.getLogger("test_logger")
     logger.setLevel(logging.INFO)

@@ -1,18 +1,28 @@
+"""Tools to create the pkgcreator logo."""
+
 from pathlib import Path
 
 
 def dict_to_xml_object(name, config: dict) -> str:
+    """Convert a dictionary to an xml object."""
     result = "\n\t".join(f'{key}="{value}"' for key, value in config.items())
     return f"<{name}\n\t{result} />"
 
 
-def make_background_box(color: str = "", stroke_color: str = "", stroke_width: int = 2):
+def make_background_box(
+    color: str = "",
+    stroke_color: str = "",
+    stroke_width: int = 2,
+    width: float = 100,
+    height: float = 100,
+):
+    """Make a colored box (e.g. as a background), widht/height are percent."""
     return dict_to_xml_object(
         "rect",
         {
             "id": "background",
-            "width": "100%",
-            "height": "100%",
+            "width": f"{width}%",
+            "height": f"{height}%",
             "fill": color,
             "stroke": stroke_color,
             "stroke-width": stroke_width,
@@ -33,6 +43,7 @@ def make_3d_box(
     stroke_color: str = "#a66a2c",
     stroke_width: int = 2,
 ):
+    """Make a 3D box."""
     front = dict_to_xml_object(
         "rect",
         {
@@ -112,6 +123,7 @@ def make_text(
     stroke_color: str = "",
     stroke_width: float = 2,
 ):
+    """Make a text element."""
     return (
         f'<text id="text-{text}" x="{x}" y="{y}" font-family="{font}" '
         f'font-size="{size}" font-weight="{weight}" fill="{color}" '
@@ -129,6 +141,7 @@ def save_svg(
     replace_tab: str = "   ",
     background_color: str = "",
 ):
+    """Save a svg content string to an svg document (header is created)."""
     filepath = Path(filename)
     if filepath.exists() and not overwrite:
         raise FileExistsError(f"{filepath} exists!")
