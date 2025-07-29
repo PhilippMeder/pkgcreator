@@ -65,11 +65,21 @@ def test_argparse_formatter() -> None:
         "usage: test command1 [-h] [-p <PATH>] [-m <MODE={ask,yes,no,auto}>] <NAME>",
         "Command description without PERIOD",
         "<NAME>                Set name.",
-        "-p, --some-path <PATH>",
-        "-m, --mode <MODE={ask,yes,no,auto}>",
     ]
     for line in important_lines:
         assert line in help_text_lines
+
+    alternatives = [
+        "-p, --some-path <PATH>",
+        "-p <PATH>, --some-path <PATH>",  # Python < 3.13
+    ]
+    assert alternatives[0] in help_text_lines or alternatives[1] in help_text_lines
+
+    alternatives = [
+        "-m, --mode <MODE={ask,yes,no,auto}>",
+        "-m <MODE={ask,yes,no,auto}>, --mode <MODE={ask,yes,no,auto}>",  # Python < 3.13
+    ]
+    assert alternatives[0] in help_text_lines or alternatives[1] in help_text_lines
 
 
 def remove_ansi_codes(text: str) -> str:

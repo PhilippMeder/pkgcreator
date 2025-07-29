@@ -10,7 +10,16 @@ from pkgcreator import (
     GitRepository,
     GitRepositoryExistsError,
     GitRepositoryNotFoundError,
+    run_git_command,
 )
+
+
+def set_local_git_user(
+    tmp_path: Path, name: str = "CI", email: str = "CI@example.com"
+) -> None:
+    """Create a local git config with user an mail."""
+    run_git_command(*["config", "user.name", name], silent=True, cwd=tmp_path)
+    run_git_command(*["config", "user.email", email], silent=True, cwd=tmp_path)
 
 
 @pytest.mark.skipif(not GIT_AVAILABLE, reason="Git not available")
@@ -20,6 +29,8 @@ def test_git_init(tmp_path: Path) -> None:
     repo = GitRepository(tmp_path)
     repo.init()
     assert repo.exists()
+
+    set_local_git_user(tmp_path)
 
     # Check GitRepositoryExistsError
     with pytest.raises(GitRepositoryExistsError):
@@ -39,6 +50,8 @@ def test_git_commit(tmp_path: Path) -> None:
     # Create repo (test is done in a different function)
     repo.init()
     (tmp_path / "example_file.txt").touch()
+
+    set_local_git_user(tmp_path)
 
     # Add/commit created file
     assert repo.add().returncode == 0
