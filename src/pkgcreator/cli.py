@@ -435,8 +435,11 @@ def creation_mode(args: argparse.Namespace) -> None:
         ):
             git_repository = GitRepository(builder.project_path, logger=logger)
             git_repository.init()
-            git_repository.add()
-            git_repository.commit("Created repository and initial commit")
+            try:
+                git_repository.add()
+                git_repository.commit("Created repository and initial commit")
+            except Exception as err:
+                logger.error(err, exc_info=True)
 
     # Create ven and install package in editable mode if wanted
     msg = "Initalise venv and install package in editable mode?"
