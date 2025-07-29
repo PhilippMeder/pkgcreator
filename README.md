@@ -1,8 +1,8 @@
 <h1 align="center">
-<img src="./docs/figs/pkgcreator_logo.svg" width="300">
+<img src="https://raw.githubusercontent.com/PhilippMeder/pkgcreator/main/docs/figs/pkgcreator_logo.svg" width="300">
 </h1>
 
-[![PyPi bade](https://img.shields.io/pypi/v/pkgcreator)](https://pypi.org/project/pkgcreator/)
+[![PyPi badge](https://img.shields.io/pypi/v/pkgcreator)](https://pypi.org/project/pkgcreator/)
 [![Python versions badge](https://img.shields.io/pypi/pyversions/pkgcreator.svg)](https://pypi.org/project/pkgcreator/)
 [![License badge](https://img.shields.io/pypi/l/pkgcreator.svg)](https://github.com/PhilippMeder/pkgcreator/blob/main/LICENSE)
 [![GitHub actions status badge](https://github.com/PhilippMeder/pkgcreator/actions/workflows/test-python-package.yml/badge.svg)](https://github.com/PhilippMeder/pkgcreator/actions/workflows/test-python-package.yml)

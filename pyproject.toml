@@ -1,6 +1,6 @@
 [project]
 name = "pkgcreator"
-version = "0.1.0"
+version = "0.1.0.post1"
 license = {file = "LICENSE"}
 description = "Create python package structure, necessary files with content, git repository and venv."
 readme = "README.md"
@@ -25,13 +25,13 @@ classifiers = [
 ]
 
 [project.urls]
-changelog = "https://github.com/PhilippMeder/pkgcreator/commits"
-documentation = "https://github.com/PhilippMeder/pkgcreator#readme"
-download = "https://github.com/PhilippMeder/pkgcreator"
-homepage = "https://github.com/PhilippMeder/pkgcreator"
-issues = "https://github.com/PhilippMeder/pkgcreator/issues"
-releasenotes = "https://github.com/PhilippMeder/pkgcreator/commits"
-source = "https://github.com/PhilippMeder/pkgcreator.git"
+Changelog = "https://github.com/PhilippMeder/pkgcreator/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/PhilippMeder/pkgcreator#readme"
+Download = "https://github.com/PhilippMeder/pkgcreator"
+Homepage = "https://github.com/PhilippMeder/pkgcreator"
+Issues = "https://github.com/PhilippMeder/pkgcreator/issues"
+Releasenotes = "https://github.com/PhilippMeder/pkgcreator/releases"
+Source = "https://github.com/PhilippMeder/pkgcreator.git"
 
 [project.scripts]
 pkgcreator = "pkgcreator.__main__:main"

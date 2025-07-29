@@ -217,7 +217,9 @@ class ProjectSettings:
         """
         names = self.get_url_fields()
         return {
-            name: _url for name in names if (_url := getattr(self, name)) is not None
+            name.capitalize(): _url
+            for name in names
+            if (_url := getattr(self, name)) is not None
         }
 
     @property

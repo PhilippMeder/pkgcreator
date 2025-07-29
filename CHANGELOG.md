@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased] 0.1.0.post1 (2025-07-29)
+
+### Fixed
+
+- Logo in README.md
+
+### Updated
+
+- Project URL names are now capitalised
+
 ## 0.1.0 (2025-07-29) First stable release
 
 ### Added
