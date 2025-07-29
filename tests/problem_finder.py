@@ -60,7 +60,7 @@ class FileChecker:
     Raises an error on initialisation if the file could not be read or parsed to ast.
     """
 
-    def __init__(self, filepath: str | Path):
+    def __init__(self, filepath: str | Path) -> None:
         self._load_from(filepath)
 
     def _load_from(self, filepath: str | Path) -> None:
@@ -179,11 +179,11 @@ class FileChecker:
 class ProblemFinder:
     """Find possible problems in all Python files in a directory."""
 
-    def __init__(self, path: str | Path, pattern: str = "*.py"):
+    def __init__(self, path: str | Path, pattern: str = "*.py") -> None:
         self._path = Path(path)
         self._pattern = pattern
 
-    def check(self):
+    def check(self) -> list[Issue]:
         """Check all files in the directory recursively."""
         all_issues = []
         for file in self._path.rglob(self._pattern):

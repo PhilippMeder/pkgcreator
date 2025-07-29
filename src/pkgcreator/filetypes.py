@@ -26,10 +26,10 @@ class BaseFileType:
     newline = "\n"
     tab = f"{'':4}"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._lines = []
 
-    def add_newline(self):
+    def add_newline(self) -> None:
         """Add a newline to the file content."""
         self._lines.append(self.newline)
 
@@ -49,11 +49,11 @@ class Readme(BaseFileType):
 
     tab = f"{'':2}"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self._headings = []
         super().__init__(*args, **kwargs)
 
-    def add_text(self, *lines: str, bold: bool = False):
+    def add_text(self, *lines: str, bold: bool = False) -> None:
         """
         Add one or more lines of text to the content.
 
@@ -68,7 +68,7 @@ class Readme(BaseFileType):
             final_text = self.bold(text) if bold else text
             self._lines.append(final_text)
 
-    def add_heading(self, text: str, level: int = 0, to_toc: bool = True):
+    def add_heading(self, text: str, level: int = 0, to_toc: bool = True) -> None:
         """
         Add a heading to the content, optionally registering it for the TOC.
 
@@ -89,7 +89,7 @@ class Readme(BaseFileType):
         if to_toc:
             self._headings.append(text)
 
-    def add_list(self, *items: str, ordered: bool = False, level: int = 0):
+    def add_list(self, *items: str, ordered: bool = False, level: int = 0) -> None:
         """
         Add a bulleted or numbered list to the content.
 
@@ -115,7 +115,7 @@ class Readme(BaseFileType):
         ordered: bool = False,
         level: int = 0,
         bold_name: bool = True,
-    ):
+    ) -> None:
         """
         Add a list of key-value pairs, optionally bolding the keys.
 
@@ -136,11 +136,11 @@ class Readme(BaseFileType):
             items = [f"{name}: {value}" for name, value in content.items()]
         self.add_list(*items, ordered=ordered, level=level)
 
-    def add_rule(self):
+    def add_rule(self) -> None:
         """Add a horizontal rule (---) to the content."""
         self._lines.append(f"{self.newline}---{self.newline}")
 
-    def add_codeblock(self, code: str | list[str], language: str = "bash"):
+    def add_codeblock(self, code: str | list[str], language: str = "bash") -> None:
         """
         Add a fenced code block with optional language annotation.
 
@@ -157,7 +157,7 @@ class Readme(BaseFileType):
         self._lines += code
         self._lines.append("```")
 
-    def add_toc(self, here: bool = False, clear: bool = False):
+    def add_toc(self, here: bool = False, clear: bool = False) -> None:
         """
         Insert or mark a table of contents (TOC) placeholder.
 
@@ -189,7 +189,7 @@ class Readme(BaseFileType):
         except ValueError:
             self._lines.append(identifier)
 
-    def get_toc(self):
+    def get_toc(self) -> str:
         """
         Generate the table of contents as Markdown links.
 
@@ -275,7 +275,7 @@ class Readme(BaseFileType):
         return f'#{text.lower().replace(" ", "-").replace("_", "-")}'
 
     @classmethod
-    def listitem(cls, text: str, index: int = None, level: int = 0) -> str:
+    def listitem(cls, text: str, index: int | None = None, level: int = 0) -> str:
         """
         Format a single list item with indentation.
 
@@ -300,7 +300,7 @@ class Readme(BaseFileType):
 class Toml(BaseFileType):
     """Generator class for creating TOML configuration files."""
 
-    def add_heading(self, text: str):
+    def add_heading(self, text: str) -> None:
         """
         Add a section header to the TOML file.
 
@@ -314,7 +314,7 @@ class Toml(BaseFileType):
         else:
             self._lines.append(f"[{text}]")
 
-    def add_dictionary(self, name: str, items: dict):
+    def add_dictionary(self, name: str, items: dict) -> None:
         """
         Add a named dictionary as a TOML object.
 
@@ -327,7 +327,7 @@ class Toml(BaseFileType):
         """
         self._lines.append(self.variable(name, self.dictionary(items), bare_value=True))
 
-    def add_list(self, name: str, items: list):
+    def add_list(self, name: str, items: list) -> None:
         """
         Add a variable containing a list.
 
@@ -353,7 +353,7 @@ class Toml(BaseFileType):
         self._lines += [f"{self.tab}{item}," for item in content]
         self._lines.append("]")
 
-    def add_variable(self, name: str, value: str):
+    def add_variable(self, name: str, value: str) -> None:
         """
         Add a basic key-value variable to the TOML.
 
@@ -366,7 +366,7 @@ class Toml(BaseFileType):
         """
         self._lines.append(self.variable(name, value))
 
-    def add_easy(self, content: dict):
+    def add_easy(self, content: dict) -> None:
         """
         Add variables, lists, or dictionaries from a single dictionary.
 

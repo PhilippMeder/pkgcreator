@@ -29,9 +29,9 @@ from pkgcreator.logging_tools import logger
 
 # Define argument parsers
 def get_creator_parser(
-    subparsers: argparse._SubParsersAction = None,
-    prog: str = None,
-    formatter_class: type = None,
+    subparsers: argparse._SubParsersAction | None = None,
+    prog: str | None = None,
+    formatter_class: type | None = None,
 ) -> argparse.ArgumentParser:
     """
     Create and configure the argument parser for 'creator'.
@@ -133,9 +133,9 @@ def get_creator_parser(
 
 
 def get_git_parser(
-    subparsers: argparse._SubParsersAction = None,
-    prog: str = None,
-    formatter_class: type = None,
+    subparsers: argparse._SubParsersAction | None = None,
+    prog: str | None = None,
+    formatter_class: type | None = None,
 ) -> argparse.ArgumentParser:
     """
     Create and configure the argument parser for 'git'.
@@ -204,9 +204,9 @@ def get_git_parser(
 
 
 def get_github_download_parser(
-    subparsers: argparse._SubParsersAction = None,
-    prog: str = None,
-    formatter_class: type = None,
+    subparsers: argparse._SubParsersAction | None = None,
+    prog: str | None = None,
+    formatter_class: type | None = None,
 ) -> argparse.ArgumentParser:
     """
     Create and configure the argument parser for 'github-download'.
@@ -276,9 +276,9 @@ def get_github_download_parser(
 
 
 def get_venv_parser(
-    subparsers: argparse._SubParsersAction = None,
-    prog: str = None,
-    formatter_class: type = None,
+    subparsers: argparse._SubParsersAction | None = None,
+    prog: str | None = None,
+    formatter_class: type | None = None,
 ) -> argparse.ArgumentParser:
     """
     Create and configure the argument parser for 'venv'.
@@ -363,7 +363,7 @@ def get_venv_parser(
 # Define run modes
 def patch_creator_default_settings(
     project_settings: ProjectSettings, args: argparse.Namespace
-):
+) -> None:
     """Ask or decide how a few settings should behave when not set explicitly."""
     if project_settings.is_default("github_repositoryname"):
         if get_prompt_bool(
@@ -395,7 +395,7 @@ def patch_creator_default_settings(
                 logger.info(f"Set '--author-mail' to {git_mail}")
 
 
-def creation_mode(args: argparse.Namespace):
+def creation_mode(args: argparse.Namespace) -> None:
     """Run the creation process."""
     # Setup the project settings
     project_settings = ProjectSettings.from_argparser(args)
@@ -448,14 +448,14 @@ def creation_mode(args: argparse.Namespace):
         )
 
 
-def list_licenses_mode():
+def list_licenses_mode() -> None:
     """Show available licenses."""
     available_licenses = get_available_licenses()
     licenses_str = ", ".join(available_licenses.keys())
     logger.info(f"Available licenses are:\n{licenses_str}")
 
 
-def git_mode(args: argparse.Namespace):
+def git_mode(args: argparse.Namespace) -> None:
     """Run the git subcommand."""
     try:
         repository = GitRepository(args.path, logger=logger)
@@ -476,7 +476,7 @@ def git_mode(args: argparse.Namespace):
         logger.warning(msg, exc_info=True)
 
 
-def github_download_mode(args: argparse.Namespace):
+def github_download_mode(args: argparse.Namespace) -> None:
     """Run the GitHub download mode."""
     repository = GithubRepository(
         owner=args.owner, repository=args.repository, branch=args.branch
@@ -508,7 +508,7 @@ def github_download_mode(args: argparse.Namespace):
         logger.error(err, exc_info=True)
 
 
-def venv_mode(args: argparse.Namespace):
+def venv_mode(args: argparse.Namespace) -> None:
     """Run the venv mode."""
     this_venv = VirtualEnvironment(
         parent_dir=args.path,
@@ -543,7 +543,7 @@ def venv_mode(args: argparse.Namespace):
             logger.error(err, exc_info=True)
 
 
-def main():
+def main() -> None:
     """
     Run main CLI tool.
 

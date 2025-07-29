@@ -44,7 +44,7 @@ class ConcreteEnvBuilder(venv.EnvBuilder):
         if self.creation_callback is not None:
             self.creation_callback(context)
 
-    def create_git_ignore_file(self, context):
+    def create_git_ignore_file(self, context) -> None:
         """
         Create a `.gitignore` file in the environment directory.
 
@@ -75,9 +75,9 @@ class VirtualEnvironment:
     def __init__(
         self,
         parent_dir: str | Path,
-        venv_name: str = None,
+        venv_name: str | None = None,
         add_version: bool = False,
-    ):
+    ) -> None:
         dir_name = ".venv" if venv_name is None else venv_name
         if add_version:
             dir_name = f"{dir_name}_{version_info.major}_{version_info.minor:02}"
@@ -205,7 +205,10 @@ class VirtualEnvironment:
             return python_exists
 
     def install_packages(
-        self, packages: list[str] = None, editable_packages: list[str] = None, **kwargs
+        self,
+        packages: list[str] | None = None,
+        editable_packages: list[str] | None = None,
+        **kwargs,
     ) -> None:
         """
         Install normal and editable packages into the virtual environment.
@@ -258,7 +261,7 @@ class VirtualEnvironment:
 
 def pip_install(
     python: str, package: str, *pip_args, silent: bool = False, logger=None, **kwargs
-):
+) -> subprocess.CompletedProcess:
     """
     Install a Python package using `pip` via a given Python interpreter.
 

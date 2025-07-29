@@ -49,7 +49,7 @@ class FileContent(dict):
         `.gitignore`, `LICENSE`, `pyproject.toml`, `README.md`, and `__main__.py`.
     """
 
-    def __init__(self, project_settings: ProjectSettings, **kwargs):
+    def __init__(self, project_settings: ProjectSettings, **kwargs) -> None:
         self.project_settings = project_settings
         kwargs.setdefault(".gitignore", self.get_gitignore())
         kwargs.setdefault("LICENSE", self.get_license())
@@ -63,7 +63,7 @@ class FileContent(dict):
         super().__init__(**kwargs)
 
     @staticmethod
-    def get_gitignore():
+    def get_gitignore() -> str:
         """Return default content for '.gitignore'."""
         return (
             "__pycache__\n"
@@ -76,7 +76,7 @@ class FileContent(dict):
             "*.egg-info"
         )
 
-    def get_license(self):
+    def get_license(self) -> str:
         """Return license text according to 'project_settings.license_id'."""
         project = self.project_settings
         if project.license_id is None:
@@ -99,7 +99,7 @@ class FileContent(dict):
 
         return license_text
 
-    def get_pyproject_toml(self):
+    def get_pyproject_toml(self) -> str:
         """Return default value for 'pyproject.toml' according to 'project_settings'."""
         project = self.project_settings
         try:
@@ -137,7 +137,7 @@ class FileContent(dict):
 
         return toml.content
 
-    def get_readme(self):
+    def get_readme(self) -> str:
         """Return default value for 'README' according to 'project_settings'."""
         project = self.project_settings
         # Create Readme object and define the links needed later
@@ -178,7 +178,7 @@ class FileContent(dict):
 
         return file.content
 
-    def get_main_py(self):
+    def get_main_py(self) -> str:
         """Get basic content for __main__.py."""
         name = self.project_settings.name
         tab = f"{'':4}"
@@ -195,7 +195,7 @@ class FileContent(dict):
         )
 
 
-def get_available_licenses(api_url: str = None):
+def get_available_licenses(api_url: str | None = None) -> str:
     """
     Get available license form the 'choosealicense.com' repository.
 
@@ -219,7 +219,7 @@ def get_available_licenses(api_url: str = None):
     }
 
 
-def get_license(name: str, licenses: dict = None):
+def get_license(name: str, licenses: dict | None = None) -> str:
     """Download the chosen licenses."""
     import requests  # Soft dependency (violates PEP 8 on purpose)
 

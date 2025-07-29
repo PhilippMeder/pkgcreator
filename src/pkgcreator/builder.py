@@ -89,7 +89,7 @@ class ProjectSettings:
     releasenotes: str = None
     source: str = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Create the GithubRepository object from the parameters."""
         self.github_repository = GithubRepository(
             self.github_username, self.github_repositoryname
@@ -167,7 +167,7 @@ class ProjectSettings:
         return self.github_repository.get_url("owner", branch=False)
 
     @staticmethod
-    def get_url_fields():
+    def get_url_fields() -> tuple[str]:
         """
         Return the names of fields that represent URLs.
 
@@ -188,7 +188,7 @@ class ProjectSettings:
         )
 
     @staticmethod
-    def get_advanced_fields():
+    def get_advanced_fields() -> tuple[str]:
         """
         Return the names of fields that are considered advanced settings.
 
@@ -239,8 +239,10 @@ class ProjectSettings:
 
     @classmethod
     def add_to_argparser(
-        cls, parser: argparse.ArgumentParser, ignore: tuple[str] | list[str] = None
-    ):
+        cls,
+        parser: argparse.ArgumentParser,
+        ignore: tuple[str] | list[str] | None = None,
+    ) -> None:
         """
         Add project fields as arguments to an argparse.ArgumentParser.
 
@@ -393,9 +395,9 @@ class PythonPackage:
         self,
         destination: str | Path,
         name: str,
-        dir_name: str = None,
+        dir_name: str | None = None,
         add_main: bool = False,
-    ):
+    ) -> None:
         self._parent_dir = Path(destination)
         self._dir_name = dir_name or name
         self._name = name
@@ -408,7 +410,7 @@ class PythonPackage:
         return self._parent_dir
 
     @parent_dir.setter
-    def parent_dir(self, new_value: str | Path):
+    def parent_dir(self, new_value: str | Path) -> None:
         self._parent_dir = Path(new_value)
 
     @property
@@ -417,7 +419,7 @@ class PythonPackage:
         return self._dir_name
 
     @dir_name.setter
-    def dir_name(self, new_value: str):
+    def dir_name(self, new_value: str) -> None:
         self._dir_name = new_value
 
     @property
@@ -426,7 +428,7 @@ class PythonPackage:
         return self._name
 
     @name.setter
-    def name(self, new_value: str):
+    def name(self, new_value: str) -> None:
         self._name = new_value
 
     @property
@@ -447,7 +449,7 @@ class PythonPackage:
             }
         }
 
-    def create(self, file_content: dict = None):
+    def create(self, file_content: dict | None = None) -> None:
         """
         Create the folder and file structure for the package.
 
@@ -466,7 +468,7 @@ class PythonPackage:
             raise PackageExistsError(msg)
         create_dir_structure(self.parent_dir, self.structure, file_content=file_content)
 
-    def get_all_filenames(self):
+    def get_all_filenames(self) -> list[str]:
         """
         Get a flat list of all filenames defined in the structure.
 
@@ -477,7 +479,7 @@ class PythonPackage:
         """
         return get_all_filenames_from_structure(self.structure)
 
-    def _set_project_path(self):
+    def _set_project_path(self) -> None:
         """Determine and set the full project path based on the directory structure."""
         if len(keys := list(self.structure.keys())) == 1:
             self._project_path = self.parent_dir.joinpath(keys[0])
@@ -485,7 +487,9 @@ class PythonPackage:
             self._project_path = self.parent_dir
 
 
-def create_dir_structure(path: Path, structure: dict, file_content: dict = None):
+def create_dir_structure(
+    path: Path, structure: dict, file_content: dict | None = None
+) -> None:
     """
     Recursively create directory and file structure.
 

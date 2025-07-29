@@ -8,7 +8,7 @@ defined in `pkgcreator.cli.main`.
 from pkgcreator.cli import main as cli_mode
 
 
-def main():
+def main() -> None:
     """
     Run the CLI mode of the package creator.
 

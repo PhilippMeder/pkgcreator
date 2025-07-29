@@ -46,14 +46,14 @@ class LoggerPipe:
         level: int = logging.INFO,
         encoding: str = "utf-8",
         errors: str = "replace",
-        prefix: str = None,
+        prefix: str = "",
         save: bool = True,
-    ):
+    ) -> None:
         self.logger = logger
         self.level = level
         self.encoding = encoding
         self.errors = errors
-        self.prefix = prefix or ""
+        self.prefix = prefix
         self.save = save
         self._rfd, self._wfd = os.pipe()
         self._collected_lines = []
@@ -227,7 +227,7 @@ class LoggerFormatter(logging.Formatter):
         show_stack_info: bool = False,
         show_traceback: bool = False,
         **kwargs,
-    ):
+    ) -> None:
         self.show_location = show_location
         self.show_exc_info = show_exc_info
         self.show_stack_info = show_stack_info

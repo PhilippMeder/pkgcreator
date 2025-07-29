@@ -35,10 +35,10 @@ class GithubRepository:
     _base_url = "https://github.com"
     _base_api_url = "https://api.github.com/repos"
 
-    def __init__(self, owner: str, repository: str, branch: str = None):
+    def __init__(self, owner: str, repository: str, branch: str = "main") -> None:
         self._owner = owner
         self._repository_name = repository
-        self.branch = branch if branch else "main"
+        self.branch = branch
 
         self._create_important_urls()
 
@@ -63,7 +63,7 @@ class GithubRepository:
         return self._api_url
 
     def get_url(
-        self, name: str = None, add: str = None, branch: str = None
+        self, name: str | None = None, add: str | None = None, branch: str | None = None
     ) -> str | None:
         """
         Get a constructed GitHub URL based on a logical name.
@@ -102,7 +102,7 @@ class GithubRepository:
         return self._finalize_url(url, add=add, branch=branch)
 
     def get_api_url(
-        self, name: str = None, add: str = None, branch: str = None
+        self, name: str | None = None, add: str | None = None, branch: str | None = None
     ) -> str | None:
         """
         Get a constructed GitHub API URL.
@@ -131,7 +131,10 @@ class GithubRepository:
         return self._finalize_url(url, add=add, branch=branch)
 
     def contents(
-        self, subfolder: str = None, branch: str = None, ensure_list: bool = True
+        self,
+        subfolder: str | None = None,
+        branch: str | None = None,
+        ensure_list: bool = True,
     ) -> list[dict]:
         """
         Get contents of the GitHub repository (or subfolder) via the API.
@@ -169,10 +172,10 @@ class GithubRepository:
     def download(
         self,
         destination: str | Path,
-        subfolder: str = None,
-        branch: str = None,
+        subfolder: str | None = None,
+        branch: str | None = None,
         recursively: bool = True,
-    ):
+    ) -> None:
         """
         Download contents of the GitHub repository (or subfolder) via the API.
 
@@ -225,8 +228,8 @@ class GithubRepository:
 
     def get_contents_str(
         self,
-        subfolder: str = None,
-        branch: str = None,
+        subfolder: str | None = None,
+        branch: str | None = None,
         recursively: bool = True,
         _level: int = 0,
     ) -> list[dict]:
@@ -250,7 +253,7 @@ class GithubRepository:
             If a request to the GitHub API or file URL fails.
         """
 
-        def format_size(size: int, n_max: int = 4):
+        def format_size(size: int, n_max: int = 4) -> str:
             """Format a file size value in kB."""
             units = {0: " B", 1: "kB", 2: "MB", 3: "GB", 4: "TB", 5: "PB"}
             diff = 1000
@@ -291,7 +294,9 @@ class GithubRepository:
 
         return "\n".join(lines)
 
-    def _finalize_url(self, url: str, add: str = None, branch: str = None) -> str:
+    def _finalize_url(
+        self, url: str, add: str | None = None, branch: str | None = None
+    ) -> str:
         """
         Add 'add' and 'branch' reference to url.
 
@@ -319,7 +324,7 @@ class GithubRepository:
 
         return url
 
-    def _create_important_urls(self):
+    def _create_important_urls(self) -> None:
         """Create important URLs of the repository."""
         self._url_owner = f"{self._base_url}/{self.owner}"
         self._url = f"{self._url_owner}/{self.name}"

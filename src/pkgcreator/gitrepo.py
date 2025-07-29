@@ -94,7 +94,7 @@ def get_git_config_value(key: str) -> str | None:
         return None
 
 
-def _is_git_available():
+def _is_git_available() -> bool:
     """
     Check if Git is available on the system.
 
@@ -130,7 +130,7 @@ class GitRepository:
         If Git is not available on the system.
     """
 
-    def __init__(self, path: str | Path, logger=None):
+    def __init__(self, path: str | Path, logger=None) -> None:
         if not GIT_AVAILABLE:
             msg = "'Git' is not available on this system!"
             raise GitNotAvailableError(msg)

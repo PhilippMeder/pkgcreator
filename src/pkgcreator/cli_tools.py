@@ -61,21 +61,21 @@ class ConsistentFormatter(argparse.HelpFormatter):
 
         return format
 
-    def _get_default_metavar_for_optional(self, action):
+    def _get_default_metavar_for_optional(self, action) -> str:
         """Make optional metavar defaults uppercase."""
         return super()._get_default_metavar_for_optional(action).upper()
 
-    def _get_default_metavar_for_positional(self, action):
+    def _get_default_metavar_for_positional(self, action) -> str:
         """Make positional metavar defaults uppercase."""
         return super()._get_default_metavar_for_positional(action).upper()
 
-    def _expand_help(self, action):
+    def _expand_help(self, action) -> str:
         """Get help and enforce sentence style."""
         help_text = super()._expand_help(action)
 
         return self._make_sentence_style(help_text)
 
-    def _fill_text(self, text, width, indent):
+    def _fill_text(self, text, width, indent) -> str:
         """
         Format the text (esp. line length), but keep custom formatting like linebreaks.
 
@@ -95,7 +95,7 @@ class ConsistentFormatter(argparse.HelpFormatter):
         )
 
     @staticmethod
-    def _make_sentence_style(text: str):
+    def _make_sentence_style(text: str) -> str:
         """Enforce a capital letter at the beginning and a punctuation at the end."""
         if text:
             # Cannot use `.capitalize()` since it deletes uppercase words
@@ -110,7 +110,7 @@ class ConsistentFormatter(argparse.HelpFormatter):
         return text
 
 
-def generate_parser_template(feature_name: str, groups: dict, n_tab: int = 4):
+def generate_parser_template(feature_name: str, groups: dict, n_tab: int = 4) -> str:
     """
     Generate a template for an argparse-based feature parser with grouped arguments.
 
@@ -170,9 +170,9 @@ argparse.ArgumentParser
     # Body
     body_lines = [
         f"def {func_name}(",
-        f"{tab}subparsers: argparse._SubParsersAction = None,",
-        f"{tab}prog: str = None,",
-        f"{tab}formatter_class: type = None,",
+        f"{tab}subparsers: argparse._SubParsersAction | None = None,",
+        f"{tab}prog: str | None = None,",
+        f"{tab}formatter_class: type | None = None,",
         ") -> argparse.ArgumentParser:",
         textwrap.indent(docstring, tab),
         f'{tab}parser_options = {"{"}',
