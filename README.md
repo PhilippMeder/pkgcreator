@@ -2,6 +2,12 @@
 <img src="./docs/figs/pkgcreator_logo.svg" width="300">
 </h1>
 
+[![PyPi bade](https://img.shields.io/pypi/v/pkgcreator)](https://pypi.org/project/pkgcreator/)
+[![Python versions badge](https://img.shields.io/pypi/pyversions/pkgcreator.svg)](https://pypi.org/project/pkgcreator/)
+[![License badge](https://img.shields.io/pypi/l/pkgcreator.svg)](https://github.com/PhilippMeder/pkgcreator/blob/main/LICENSE)
+[![GitHub actions status badge](https://github.com/PhilippMeder/pkgcreator/actions/workflows/test-python-package.yml/badge.svg)](https://github.com/PhilippMeder/pkgcreator/actions/workflows/test-python-package.yml)
+[![GitHub issues badge](https://img.shields.io/badge/issue_tracking-github-blue.svg)](https://github.com/PhilippMeder/pkgcreator/issues)
+
 `pkgcreator` is a Python CLI tool that helps you quickly set up a new Python package with a recommended folder structure, a virtual environment, license file, Git repository, and pre-filled configuration files like `pyproject.toml` and `README.md`.
 
 It supports interactive prompts, smart defaults (e.g. from your Git config), and includes additional utilities like a GitHub folder downloader, CLI/formatter helpers, and virtual environment management.

@@ -1,3 +1,5 @@
+### Main code
+
 - [x] github handling
 - [x] git repository (creation) handling
 - [x] venv (creation) handling
@@ -8,30 +10,34 @@
 - [x] combined cli
 - [x] add subparsers/commands and reduce to one callable script (e.g. like `git [commit | add | init]`)
 
-After all that
-- [x] delete old files
-- [x] update README
-    - [x] venv
-    - [x] logging tools
-    - [x] cli tools
-    - [x] toc
-    - [x] check
-    - [x] logo?
-- [ ] write tests
-    - [x] builder/cli
-    - [x] git
-    - [x] venv
-    - [x] tools
-    - [x] ghutils urls
-    - [ ] ghutils download (`requests` to the GitHub API are limited, so how can this be done without a real access?)
-- [ ] auto-run tests for different Python versions (first tests are promising that 3.10 & 3.11 are working)
+### Tests
+
+- [x] builder/cli
+- [x] git
+- [x] venv
+- [x] tools
+- [x] ghutils urls
+- [ ] ghutils download (`requests` to the GitHub API are limited, so how can this be done without a real access?)
+
+#### README
+- [x] venv
+- [x] logging tools
+- [x] cli tools
+- [x] toc
+- [x] check
+- [x] logo
+
+### Inline documentation
+
+- [x] add missing docstrings
+- [x] take care of type annotations for optional parameters, e.g. `list[str] = None` should be `list[str] | None = None` according to PEP 484
+
+### Project
+
 - [ ] update pyproject.toml
+    - [x] add dev tools `pytest` and `ruff` with config
     - [ ] maybe `dynamic = ["description"]` to create description dynamically (README)?
-- [ ] inform about GitHub workflows and tagging
-    - [ ] how and when to run tests (with `pytest`) automatically for different versions of Python
-    - [ ] how and when to publish automatically to PyPI
-    - [ ] tagging and package version
-    - [ ] what is best?:
-        - branches `main` and `dev`, only run tests and publishing to PyPI on a push to `main` (should failed tests prevent a publishing?), push all little updates to `dev`
-        - push all to `main` but tag manually, tagging triggers tests and publishing
+- [x] GitHub workflows
+    - [x] push/pull to main branch should trigger `pytest` and `ruff`
+    - [x] creating a release should run `pytest` and upload to PyPI
 - [ ] publish

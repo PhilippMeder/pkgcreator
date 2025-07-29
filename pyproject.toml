@@ -38,4 +38,13 @@ pkgcreator = "pkgcreator.__main__:main"
 
 [project.optional-dependencies]
 full = ["requests"]
-dev = ["pytest"]
+dev = ["pytest", "ruff"]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "N"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
