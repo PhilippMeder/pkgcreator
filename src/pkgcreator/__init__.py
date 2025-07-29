@@ -15,6 +15,8 @@ Importing from `pkgcreator` gives access to the core functionality for
 programmatic usage and integration.
 """
 
+from importlib.metadata import version, PackageNotFoundError
+
 from pkgcreator.ghutils import GithubRepository
 from pkgcreator.builder import PackageExistsError, ProjectSettings, PythonPackage
 from pkgcreator.file_contents import FileContent, get_available_licenses, get_license
@@ -28,6 +30,11 @@ from pkgcreator.gitrepo import (
     run_git_command,
 )
 from pkgcreator.venv_manager import VirtualEnvironment
+
+try:
+    __version__ = version("pkgcreator")
+except PackageNotFoundError:
+    __version__ = "dev"
 
 __all__ = [
     "GitNotAvailableError",

@@ -279,18 +279,21 @@ def pip_install(
     package : str
         The name of the package to install.
     *pip_args : str
-        Additional arguments passed to `pip install` (e.g., `--upgrade`, `--no-cache-dir`).
+        Additional arguments passed to `pip install` (e.g., `--upgrade`).
     silent : bool, optional
         If True, disables logging even if a logger is provided. Default is False.
     logger : logging.Logger, optional
-        Logger used to stream real-time output of the install command. If None, no logging is used.
+        Logger used to stream real-time output of the install command.
+        If None, no logging is used.
     **kwargs : dict
-        Additional keyword arguments passed to `subprocess.run()` or `logged_subprocess_run()`.
+        Additional keyword arguments passed to `subprocess.run()` or
+        `logged_subprocess_run()`.
 
     Returns
     -------
     subprocess.CompletedProcess
-        The result of the subprocess call, containing the exit code and (if captured) output.
+        The result of the subprocess call, containing the exit code and (if captured)
+        output.
     """
     command = [python, "-m", "pip", "install", *pip_args, package]
     if logger and not silent:

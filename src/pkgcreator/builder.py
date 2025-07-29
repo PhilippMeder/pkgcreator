@@ -65,7 +65,9 @@ class ProjectSettings:
         GitHub username.
     github_repositoryname : str
         GitHub repository name.
-    changelog, documentation, download, funding, homepage, issues, releasenotes, source : str or None
+    changelog, documentation, download, funding, homepage : str or None
+        Optional URLs related to the project.
+    issues, releasenotes, source : str or None
         Optional URLs related to the project.
     """
 

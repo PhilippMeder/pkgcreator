@@ -183,7 +183,8 @@ argparse.ArgumentParser
         f'{tab}{"}"}',
         f"{tab}if subparsers:",
         f"{tab*2}parser = subparsers.add_parser(",
-        f'{tab*3}"{feature_name}", help=parser_options["description"], **parser_options',
+        f'{tab*3}"{feature_name}", help=parser_options["description"], '
+        "**parser_options",
         f"{tab*2})",
         f"{tab}else:",
         f"{tab*2}parser = argparse.ArgumentParser(prog=prog, **parser_options)",

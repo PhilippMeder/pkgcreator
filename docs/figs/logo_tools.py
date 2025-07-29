@@ -73,7 +73,9 @@ def make_3d_box(
         "polygon",
         {
             "id": "package box top",
-            "points": f"{front_top_left} {front_top_right} {top_top_right} {top_top_left}",
+            "points": (
+                f"{front_top_left} {front_top_right} {top_top_right} " f"{top_top_left}"
+            ),
             "fill": top_color,
             # "stroke": stroke_color,
             # "stroke-width": stroke_width,
@@ -84,17 +86,16 @@ def make_3d_box(
         "polygon",
         {
             "id": "package box side",
-            "points": f"{front_top_left} {top_top_left} {side_bottom_left} {front_bottom_left}",
+            "points": (
+                f"{front_top_left} {top_top_left} {side_bottom_left} "
+                f"{front_bottom_left}"
+            ),
             "fill": side_color,
             # "stroke": stroke_color,
             # "stroke-width": stroke_width,
         },
     )
-    # <path
-    #  id="rect2"
-    #  style="fill:#f3c76b;stroke:#000000;stroke-width:2;stroke-dasharray:none;stroke-opacity:1"
-    #  d="M 20,20 V 60 L 30,70 H 70 V 30 L 60,20 Z"
-    #  inkscape:label="package box outline" />
+
     outline = dict_to_xml_object(
         "path",
         {

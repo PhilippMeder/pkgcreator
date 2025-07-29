@@ -109,7 +109,10 @@ class FileChecker:
                                     issuetype=701,
                                     filepath=self.filepath,
                                     lineno=node.lineno,
-                                    msg=f"Works for Python < 3.12?: {full_fstring.strip()}",
+                                    msg=(
+                                        "Works for Python < 3.12?: "
+                                        f"{full_fstring.strip()}"
+                                    ),
                                 )
                             )
                             # Count only one time
@@ -133,7 +136,7 @@ class FileChecker:
             if isinstance(node, ast.FunctionDef):
                 defaults = node.args.defaults
                 args = node.args.args[-len(defaults) :] if defaults else []
-                for arg, default in zip(args, defaults):
+                for arg, default in zip(args, defaults, strict=True):
                     if isinstance(default, ast.Constant) and default.value is None:
                         if arg.annotation:
                             ann_str = ast.unparse(arg.annotation)
@@ -143,7 +146,10 @@ class FileChecker:
                                         issuetype=484,
                                         filepath=self.filepath,
                                         lineno=node.lineno,
-                                        msg=f"Param '{arg.arg}' default None, but hint is '{ann_str}'",
+                                        msg=(
+                                            f"Param '{arg.arg}' default None, but hint "
+                                            f"is '{ann_str}'"
+                                        ),
                                     )
                                 )
         return issues
@@ -168,7 +174,7 @@ class FileChecker:
         for name in checks:
             try:
                 check_func = getattr(self, name)
-            except AttributeError as err:
+            except AttributeError as _err:
                 print(f"Could not find check function '{name}'!")
                 continue
             all_issues.extend(check_func())

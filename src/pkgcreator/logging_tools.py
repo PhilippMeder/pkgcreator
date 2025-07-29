@@ -205,7 +205,7 @@ COLORS = {
 
 class LoggerFormatter(logging.Formatter):
     """
-    Custom logging formatter with optional ANSI coloring and enhanced formatting options.
+    Custom logging formatter with ANSI coloring and enhanced formatting options.
 
     Parameters
     ----------
